@@ -1,0 +1,69 @@
+EADARP version 2def-dirty
+ARGS: --ifile=EADARP/instances/l1/a6-72.txt --odir=EADARP/out/a6-72 --oname=run95
+Settings:
+--alns_gamma=0.025
+--alns_segment_size=100
+--alns_sigma1=10
+--alns_sigma2=9
+--alns_sigma3=3
+--at_most_one_s=false
+--gamma=-1.0
+--ifile=EADARP/instances/l1/a6-72.txt
+--insert_charging_otf=true
+--insert_cost_noise=0.014
+--lns_init_temp_factor=0.0
+--lns_temp_dec_factor=0.99
+--mh_checkit=false
+--mh_lfreq=0
+--mh_lnewinc=true
+--mh_tciter=-1
+--mh_tctime=-1.0
+--mh_titer=300
+--mh_tobj=-1.0
+--mh_ttime=-1.0
+--odir=EADARP/out/a6-72
+--oname=run95
+--only_single_s_visits=true
+--repair_max_routes=0
+--seed=159824351
+--use_milp_in_otf=0
+--xcheck_isfeasible=false
+
+EADARPInstance(EADARP/instances/l1/a6-72.txt, n=72, n_K=6, S=[159, 160, 161], Q=14.85, n_F=6, γ=0.7, T_plan=720.0, F=[153, 154, 155, 156, 157, 158])
+
+T preprocessing time [s]: 2.53248
+I       iter             best          obj_old          obj_new        time              method info
+I          1     100015.00000     100072.00000     100015.00000      0.1954                 con 
+I          5     100014.00000     100015.00000     100014.00000      0.4948        drrr_15+rroi 
+I          7     100013.00000     100014.00000     100013.00000      0.6011         drrr_15+rrg 
+I         12     100012.00000     100013.00000     100012.00000      0.7691        drrr_15+rroi 
+I         30     100011.00000     100012.00000     100011.00000      1.2210        drrr_15+rroi 
+I         46     100010.00000     100011.00000     100010.00000      1.5390         drrr_15+rrg 
+I         51     100009.00000     100010.00000     100009.00000      1.5997         drrr_15+rrg 
+I         61     100008.00000     100009.00000     100008.00000      1.8697        drrr_15+rroi 
+I        205     100007.00000     100008.00000     100007.00000      2.8210        drrr_15+rrri 
+I        300     100007.00000     100007.00000     100008.00000      3.5607         drrr_15+rrg 
+
+Method statistics
+S  method    iter  succ  succ-rate%  tot-obj-gain  avg-obj-gain  rel-succ%  net-time  net-time%  brut-time  brut-time%
+S  con          1     1   100.00000     -57.00000     -57.00000    5.88235   0.19539    5.48737    0.19539     5.48737
+S  drrr_15    299     8     2.67559      -8.00000      -0.02676   47.05882   0.00493    0.13843    0.00493     0.13843
+S  rrg         94     3     3.19149      -3.00000      -0.03191   17.64706   1.03956   29.19522    1.03956    29.19522
+S  rroi       101     4     3.96040      -4.00000      -0.03960   23.52941   1.18050   33.15342    1.18050    33.15342
+S  rrri       104     1     0.96154      -1.00000      -0.00962    5.88235   1.13877   31.98148    1.13877    31.98148
+S  SUM/AVG    599    17     2.83806     -73.00000      -0.12187   20.00000   3.55915   99.95593    3.55915    99.95593
+
+T best solution: EADARPSolution(t_routing=-1.0, t_excess=-1.0, obj_val=100007.0, obj_val_valid=true,
+    unserved_requests=[16, 5, 72, 31, 27, 71, 36], F_visited=[157, 155, 158, 153, 154, 156], S_visited=[161, 160, 159],
+    (1, ([147, 40, 112, 24, 96, 35, 107, 47, 38, 119, 10, 110, 82, 34, 106, 30, 102, 42, 114, 6, 14, 78, 86, 68, 33, 105, 140, 22, 69, 94, 141, 51, 123, 159, 153], [171.1805407990638], [34]))
+    (2, ([148, 21, 93, 11, 83, 8, 80, 9, 81, 4, 57, 76, 129, 154], Float64[], Int64[]))
+    (3, ([149, 23, 61, 95, 133, 56, 1, 73, 128, 20, 92, 32, 66, 104, 138, 7, 79, 29, 101, 52, 124, 13, 85, 161, 49, 65, 17, 121, 137, 89, 53, 125, 155], [175.38364411456826], [24]))
+    (4, ([150, 48, 120, 55, 127, 43, 115, 12, 28, 100, 84, 67, 15, 87, 139, 156], Float64[], Int64[]))
+    (5, ([151, 19, 91, 62, 134, 45, 117, 70, 142, 3, 75, 64, 136, 37, 109, 63, 135, 41, 113, 58, 130, 26, 98, 46, 44, 116, 118, 18, 90, 60, 132, 54, 126, 160, 157], [144.66235601448105], [34]))
+    (6, ([152, 59, 131, 25, 97, 39, 111, 2, 74, 50, 122, 158], Float64[], Int64[])))
+
+T best obj: 100007.0
+T best iteration: 205
+T total iterations: 300
+T best time [s]: 2.821
+T total time [s]: 3.5607

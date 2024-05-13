@@ -1,0 +1,7 @@
+Every input represents one edge. This each can be derived from a different instance -> Maybe consider adding additional input that represents the form of the solution.
+
+For creation of labels -> 100 solutions. calculate the weighted average. First get the solution. How to proper structure output files?
+The lables need vertices/edges as basis. can just be created with index.
+
+Extract both objective funciton and edges that are in the solution. we need the relative weighting beforehand therefore we
+have to iterate through the files twice. ones to get all object functions and second to calculate the actual pseudo labels

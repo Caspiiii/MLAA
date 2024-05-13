@@ -1,0 +1,75 @@
+EADARP version 2def-dirty
+ARGS: --ifile=EADARP/instances/b1/a5-40.txt --odir=EADARP/out/a5-40 --oname=run85
+Settings:
+--alns_gamma=0.025
+--alns_segment_size=100
+--alns_sigma1=10
+--alns_sigma2=9
+--alns_sigma3=3
+--at_most_one_s=false
+--gamma=-1.0
+--ifile=EADARP/instances/b1/a5-40.txt
+--insert_charging_otf=true
+--insert_cost_noise=0.014
+--lns_init_temp_factor=0.0
+--lns_temp_dec_factor=0.99
+--mh_checkit=false
+--mh_lfreq=0
+--mh_lnewinc=true
+--mh_tciter=-1
+--mh_tctime=-1.0
+--mh_titer=300
+--mh_tobj=-1.0
+--mh_ttime=-1.0
+--odir=EADARP/out/a5-40
+--oname=run85
+--only_single_s_visits=true
+--repair_max_routes=0
+--seed=1729901202
+--use_milp_in_otf=0
+--xcheck_isfeasible=false
+
+EADARPInstance(EADARP/instances/b1/a5-40.txt, n=40, n_K=5, S=[93, 94, 95], Q=14.85, n_F=5, γ=0.7, T_plan=480.0, F=[88, 89, 90, 91, 92])
+
+T preprocessing time [s]: 0.79136
+I       iter             best          obj_old          obj_new        time              method info
+I          1        504.50628     100040.00000        504.50628      0.0801                 con 
+I          3        483.91710        504.50628        483.91710      0.1352        drrr_15+rroi 
+I          4        478.24763        483.91710        478.24763      0.1601        drrr_15+rrri 
+I         10        470.08377        478.24763        470.08377      0.2332        drrr_15+rroi 
+I         23        468.14844        470.08377        468.14844      0.3326        drrr_15+rrri 
+I         26        466.16775        468.14844        466.16775      0.3479        drrr_15+rrri 
+I         40        462.25859        466.16775        462.25859      0.3802        drrr_15+rrri 
+I         45        458.47507        462.25859        458.47507      0.3948        drrr_15+rrri 
+I         61        458.40775        458.47507        458.40775      0.4512        drrr_15+rroi 
+I         62        457.21546        458.40775        457.21546      0.4547        drrr_15+rrri 
+I         75        456.90568        457.21546        456.90568      0.4951        drrr_15+rrri 
+I         83        456.86935        456.90568        456.86935      0.5384        drrr_15+rroi 
+I         90        455.46322        456.86935        455.46322      0.5648         drrr_15+rrg 
+I         91        455.18033        455.46322        455.18033      0.5694        drrr_15+rrri 
+I         98        454.69688        455.18033        454.69688      0.6034         drrr_15+rrg 
+I        104        449.37078        454.69688        449.37078      0.6261         drrr_15+rrg 
+I        300        449.37078        449.37078        457.98198      0.8402        drrr_15+rrri 
+
+Method statistics
+S  method    iter  succ  succ-rate%  tot-obj-gain  avg-obj-gain  rel-succ%  net-time  net-time%  brut-time  brut-time%
+S  con          1     1   100.00000  -99535.49372  -99535.49372    3.22581   0.08005    9.52749    0.08005     9.52749
+S  drrr_15    299    15     5.01672     -55.13550      -0.18440   48.38710   0.00246    0.29277    0.00246     0.29277
+S  rrg         92     3     3.26087      -7.21568      -0.07843    9.67742   0.23523   27.99505    0.23523    27.99505
+S  rroi       106     4     3.77358     -28.85669      -0.27223   12.90323   0.24514   29.17481    0.24514    29.17481
+S  rrri       101     8     7.92079     -19.06313      -0.18874   25.80645   0.27609   32.85831    0.27609    32.85831
+S  SUM/AVG    599    31     5.17529  -99645.76471    -166.35353   20.00000   0.83898   99.84842    0.83898    99.84842
+
+T best solution: EADARPSolution(t_routing=574.819, t_excess=73.025, obj_val=449.371, obj_val_valid=true,
+    unserved_requests=Int64[], F_visited=[89, 91, 90, 88, 92], S_visited=[93, 94, 95],
+    (1, ([83, 22, 62, 34, 74, 17, 57, 11, 2, 42, 51, 28, 68, 10, 50, 37, 77, 94, 18, 6, 58, 46, 88], [60.91809603347228], [18]))
+    (2, ([84, 26, 66, 14, 54, 40, 80, 8, 1, 48, 41, 31, 71, 89], Float64[], Int64[]))
+    (3, ([85, 24, 64, 25, 65, 9, 49, 30, 70, 5, 45, 39, 79, 95, 90], [27.752364111459745], [14]))
+    (4, ([86, 21, 35, 75, 61, 38, 78, 32, 72, 13, 53, 19, 59, 33, 27, 73, 67, 12, 52, 4, 44, 23, 36, 63, 76, 93, 91], [90.05024259914396], [26]))
+    (5, ([87, 3, 43, 20, 7, 60, 47, 16, 29, 56, 69, 15, 55, 92], Float64[], Int64[])))
+
+T best obj: 449.37078343671453
+T best iteration: 104
+T total iterations: 300
+T best time [s]: 0.626
+T total time [s]: 0.8403

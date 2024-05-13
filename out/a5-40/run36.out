@@ -1,0 +1,72 @@
+EADARP version 2def-dirty
+ARGS: --ifile=EADARP/instances/b1/a5-40.txt --odir=EADARP/out/a5-40 --oname=run36
+Settings:
+--alns_gamma=0.025
+--alns_segment_size=100
+--alns_sigma1=10
+--alns_sigma2=9
+--alns_sigma3=3
+--at_most_one_s=false
+--gamma=-1.0
+--ifile=EADARP/instances/b1/a5-40.txt
+--insert_charging_otf=true
+--insert_cost_noise=0.014
+--lns_init_temp_factor=0.0
+--lns_temp_dec_factor=0.99
+--mh_checkit=false
+--mh_lfreq=0
+--mh_lnewinc=true
+--mh_tciter=-1
+--mh_tctime=-1.0
+--mh_titer=300
+--mh_tobj=-1.0
+--mh_ttime=-1.0
+--odir=EADARP/out/a5-40
+--oname=run36
+--only_single_s_visits=true
+--repair_max_routes=0
+--seed=79608430
+--use_milp_in_otf=0
+--xcheck_isfeasible=false
+
+EADARPInstance(EADARP/instances/b1/a5-40.txt, n=40, n_K=5, S=[93, 94, 95], Q=14.85, n_F=5, γ=0.7, T_plan=480.0, F=[88, 89, 90, 91, 92])
+
+T preprocessing time [s]: 0.79387
+I       iter             best          obj_old          obj_new        time              method info
+I          1        505.37583     100040.00000        505.37583      0.0757                 con 
+I          3        497.68603        505.37583        497.68603      0.1665        drrr_15+rrri 
+I         10        489.06488        497.68603        489.06488      0.2833         drrr_15+rrg 
+I         12        469.24458        489.06488        469.24458      0.3127        drrr_15+rroi 
+I         13        466.75643        469.24458        466.75643      0.3258        drrr_15+rrri 
+I         21        451.28325        466.75643        451.28325      0.3807        drrr_15+rrri 
+I         24        447.52470        451.28325        447.52470      0.3890        drrr_15+rrri 
+I         29        446.06280        447.52470        446.06280      0.4166        drrr_15+rrri 
+I         34        445.98998        446.06280        445.98998      0.4574        drrr_15+rroi 
+I         51        444.37321        445.98998        444.37321      0.4990        drrr_15+rrri 
+I         56        443.02809        444.37321        443.02809      0.5031         drrr_15+rrg 
+I        123        442.78717        443.02809        442.78717      0.6101        drrr_15+rroi 
+I        282        441.13768        442.78717        441.13768      0.7740         drrr_15+rrg 
+I        300        441.13768        441.13768     100001.00000      0.8087        drrr_15+rroi 
+
+Method statistics
+S  method    iter  succ  succ-rate%  tot-obj-gain  avg-obj-gain  rel-succ%  net-time  net-time%  brut-time  brut-time%
+S  con          1     1   100.00000  -99534.62417  -99534.62417    4.00000   0.07563    9.35077    0.07563     9.35077
+S  drrr_15    299    12     4.01338     -64.23815      -0.21484   48.00000   0.00260    0.32168    0.00260     0.32168
+S  rrg        101     3     2.97030     -11.61576      -0.11501   12.00000   0.27901   34.49767    0.27901    34.49767
+S  rroi        92     3     3.26087     -20.13404      -0.21885   12.00000   0.22214   27.46653    0.22214    27.46653
+S  rrri       106     6     5.66038     -32.48834      -0.30649   24.00000   0.22812   28.20531    0.22812    28.20531
+S  SUM/AVG    599    25     4.17362  -99663.10047    -166.38247   20.00000   0.80749   99.84196    0.80749    99.84196
+
+T best solution: EADARPSolution(t_routing=563.42, t_excess=74.292, obj_val=441.138, obj_val_valid=true,
+    unserved_requests=Int64[], F_visited=[89, 90, 91, 92, 88], S_visited=[94, 93, 95],
+    (1, ([83, 34, 74, 21, 35, 75, 61, 38, 78, 32, 72, 17, 57, 11, 2, 42, 51, 8, 28, 48, 68, 10, 50, 39, 79, 93, 88], [80.34317229142098], [26]))
+    (2, ([84, 22, 62, 3, 43, 20, 7, 60, 47, 13, 53, 27, 67, 40, 80, 4, 44, 16, 29, 56, 69, 94, 89], [61.637643009386856], [22]))
+    (3, ([85, 14, 25, 54, 65, 9, 49, 95, 5, 45, 12, 52, 37, 77, 18, 6, 58, 46, 90], [30.337785001749562], [8]))
+    (4, ([86, 24, 64, 30, 70, 23, 36, 63, 76, 15, 55, 91], Float64[], Int64[]))
+    (5, ([87, 26, 66, 19, 59, 33, 73, 1, 41, 31, 71, 92], Float64[], Int64[])))
+
+T best obj: 441.1376770076333
+T best iteration: 282
+T total iterations: 300
+T best time [s]: 0.774
+T total time [s]: 0.8088

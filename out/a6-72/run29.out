@@ -1,0 +1,70 @@
+EADARP version 2def-dirty
+ARGS: --ifile=EADARP/instances/l1/a6-72.txt --odir=EADARP/out/a6-72 --oname=run29
+Settings:
+--alns_gamma=0.025
+--alns_segment_size=100
+--alns_sigma1=10
+--alns_sigma2=9
+--alns_sigma3=3
+--at_most_one_s=false
+--gamma=-1.0
+--ifile=EADARP/instances/l1/a6-72.txt
+--insert_charging_otf=true
+--insert_cost_noise=0.014
+--lns_init_temp_factor=0.0
+--lns_temp_dec_factor=0.99
+--mh_checkit=false
+--mh_lfreq=0
+--mh_lnewinc=true
+--mh_tciter=-1
+--mh_tctime=-1.0
+--mh_titer=300
+--mh_tobj=-1.0
+--mh_ttime=-1.0
+--odir=EADARP/out/a6-72
+--oname=run29
+--only_single_s_visits=true
+--repair_max_routes=0
+--seed=131033193
+--use_milp_in_otf=0
+--xcheck_isfeasible=false
+
+EADARPInstance(EADARP/instances/l1/a6-72.txt, n=72, n_K=6, S=[159, 160, 161], Q=14.85, n_F=6, γ=0.7, T_plan=720.0, F=[153, 154, 155, 156, 157, 158])
+
+T preprocessing time [s]: 2.53927
+I       iter             best          obj_old          obj_new        time              method info
+I          1     100012.00000     100072.00000     100012.00000      0.2006                 con 
+I         13     100011.00000     100012.00000     100011.00000      0.6594        drrr_15+rrri 
+I         48     100010.00000     100011.00000     100010.00000      1.4689        drrr_15+rroi 
+I         51     100009.00000     100010.00000     100009.00000      1.5056        drrr_15+rroi 
+I         60     100008.00000     100009.00000     100008.00000      1.6362         drrr_15+rrg 
+I         61     100007.00000     100008.00000     100007.00000      1.6608        drrr_15+rroi 
+I        139     100006.00000     100007.00000     100006.00000      2.8247        drrr_15+rrri 
+I        151     100005.00000     100006.00000     100005.00000      3.0139        drrr_15+rroi 
+I        279     100004.00000     100005.00000     100004.00000      3.5617        drrr_15+rroi 
+I        288     100003.00000     100004.00000     100003.00000      3.6375        drrr_15+rrri 
+I        300     100003.00000     100003.00000     100008.00000      3.6955        drrr_15+rrri 
+
+Method statistics
+S  method    iter  succ  succ-rate%  tot-obj-gain  avg-obj-gain  rel-succ%  net-time  net-time%  brut-time  brut-time%
+S  con          1     1   100.00000     -60.00000     -60.00000    5.26316   0.20059    5.42787    0.20059     5.42787
+S  drrr_15    299     9     3.01003      -9.00000      -0.03010   47.36842   0.00407    0.11002    0.00407     0.11002
+S  rrg         89     1     1.12360      -1.00000      -0.01124    5.26316   1.32787   35.93225    1.32787    35.93225
+S  rroi       115     5     4.34783      -5.00000      -0.04348   26.31579   1.02235   27.66486    1.02235    27.66486
+S  rrri        95     3     3.15789      -3.00000      -0.03158   15.78947   1.13904   30.82250    1.13904    30.82250
+S  SUM/AVG    599    19     3.17195     -78.00000      -0.13022   20.00000   3.69391   99.95751    3.69391    99.95751
+
+T best solution: EADARPSolution(t_routing=-1.0, t_excess=-1.0, obj_val=100003.0, obj_val_valid=true,
+    unserved_requests=[31, 71, 9], F_visited=[158, 157, 155, 156, 153, 154], S_visited=[160, 161, 159],
+    (1, ([147, 40, 112, 48, 55, 120, 127, 43, 115, 54, 126, 12, 28, 100, 84, 67, 139, 153], Float64[], Int64[]))
+    (2, ([148, 19, 91, 62, 134, 32, 66, 3, 104, 138, 75, 25, 97, 37, 64, 136, 109, 52, 124, 13, 42, 114, 85, 58, 130, 26, 98, 44, 116, 22, 69, 94, 141, 161, 154], [166.3683867136472], [34]))
+    (3, ([149, 61, 24, 133, 56, 96, 128, 38, 10, 110, 82, 7, 79, 21, 93, 11, 83, 63, 30, 135, 102, 159, 8, 80, 49, 65, 17, 121, 137, 89, 4, 57, 76, 129, 15, 87, 155], [188.5194146460193], [22]))
+    (4, ([150, 35, 107, 34, 39, 111, 106, 72, 5, 144, 77, 36, 108, 156], Float64[], Int64[]))
+    (5, ([151, 47, 119, 68, 2, 140, 74, 50, 60, 132, 122, 16, 88, 53, 125, 157], Float64[], Int64[]))
+    (6, ([152, 23, 59, 131, 95, 1, 73, 20, 92, 45, 117, 70, 142, 27, 99, 29, 101, 14, 6, 41, 86, 78, 113, 33, 46, 105, 118, 18, 90, 51, 123, 160, 158], [159.65753837570196], [32])))
+
+T best obj: 100003.0
+T best iteration: 288
+T total iterations: 300
+T best time [s]: 3.637
+T total time [s]: 3.6955

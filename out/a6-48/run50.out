@@ -1,0 +1,72 @@
+EADARP version 2def-dirty
+ARGS: --ifile=EADARP/instances/l1/a6-48.txt --odir=EADARP/out/a6-48 --oname=run50
+Settings:
+--alns_gamma=0.025
+--alns_segment_size=100
+--alns_sigma1=10
+--alns_sigma2=9
+--alns_sigma3=3
+--at_most_one_s=false
+--gamma=-1.0
+--ifile=EADARP/instances/l1/a6-48.txt
+--insert_charging_otf=true
+--insert_cost_noise=0.014
+--lns_init_temp_factor=0.0
+--lns_temp_dec_factor=0.99
+--mh_checkit=false
+--mh_lfreq=0
+--mh_lnewinc=true
+--mh_tciter=-1
+--mh_tctime=-1.0
+--mh_titer=300
+--mh_tobj=-1.0
+--mh_ttime=-1.0
+--odir=EADARP/out/a6-48
+--oname=run50
+--only_single_s_visits=true
+--repair_max_routes=0
+--seed=713177591
+--use_milp_in_otf=0
+--xcheck_isfeasible=false
+
+EADARPInstance(EADARP/instances/l1/a6-48.txt, n=48, n_K=6, S=[111, 112, 113], Q=14.85, n_F=6, γ=0.7, T_plan=480.0, F=[105, 106, 107, 108, 109, 110])
+
+T preprocessing time [s]: 1.21043
+I       iter             best          obj_old          obj_new        time              method info
+I          1     100001.00000     100048.00000     100001.00000      0.1384                 con 
+I         54        596.66495     100001.00000        596.66495      1.4296        drrr_15+rrri 
+I         58        590.34279        596.66495        590.34279      1.5017        drrr_15+rrri 
+I         60        568.17420        590.34279        568.17420      1.5148        drrr_15+rroi 
+I         63        559.48401        568.17420        559.48401      1.5635        drrr_15+rrri 
+I         71        557.36360        559.48401        557.36360      1.6305        drrr_15+rrri 
+I         80        554.48598        557.36360        554.48598      1.6956        drrr_15+rrri 
+I         87        552.01187        554.48598        552.01187      1.7180         drrr_15+rrg 
+I         90        547.64676        552.01187        547.64676      1.7426         drrr_15+rrg 
+I        119        547.08711        547.64676        547.08711      1.8358        drrr_15+rrri 
+I        124        546.69336        547.08711        546.69336      1.8475         drrr_15+rrg 
+I        284        545.58077        546.69336        545.58077      2.2373        drrr_15+rrri 
+I        300        545.58077        545.58077     100001.00000      2.2701        drrr_15+rrri 
+
+Method statistics
+S  method    iter  succ  succ-rate%  tot-obj-gain  avg-obj-gain  rel-succ%  net-time  net-time%  brut-time  brut-time%
+S  con          1     1   100.00000     -47.00000     -47.00000    4.34783   0.13838    6.09558    0.13838     6.09558
+S  drrr_15    299    11     3.67893  -99455.41923    -332.62682   47.82609   0.00418    0.18424    0.00418     0.18424
+S  rrg         88     3     3.40909      -7.23297      -0.08219   13.04348   0.60215   26.52486    0.60215    26.52486
+S  rroi        99     1     1.01010     -22.16859      -0.22393    4.34783   0.54778   24.12949    0.54778    24.12949
+S  rrri       112     7     6.25000  -99426.01767    -887.73230   30.43478   0.97613   42.99845    0.97613    42.99845
+S  SUM/AVG    599    23     3.83973 -198957.83845    -332.14998   20.00000   2.26862   99.93262    2.26862    99.93262
+
+T best solution: EADARPSolution(t_routing=657.707, t_excess=209.203, obj_val=545.581, obj_val_valid=true,
+    unserved_requests=Int64[], F_visited=[107, 105, 106, 109, 108, 110], S_visited=[113, 111, 112],
+    (1, ([99, 9, 57, 38, 40, 88, 86, 19, 67, 48, 6, 96, 54, 41, 89, 32, 80, 113, 105], [50.9082255856276], [18]))
+    (2, ([100, 28, 76, 44, 15, 63, 92, 16, 64, 42, 24, 90, 17, 65, 72, 112, 10, 7, 58, 55, 106], [51.605788352972446], [16]))
+    (3, ([101, 11, 59, 33, 81, 37, 85, 47, 23, 71, 95, 21, 45, 69, 93, 107], Float64[], Int64[]))
+    (4, ([102, 3, 51, 12, 60, 2, 50, 18, 66, 108], Float64[], Int64[]))
+    (5, ([103, 1, 49, 39, 87, 30, 22, 78, 70, 35, 83, 4, 52, 109], Float64[], Int64[]))
+    (6, ([104, 34, 29, 82, 77, 26, 74, 5, 53, 46, 94, 8, 56, 36, 31, 84, 25, 79, 73, 14, 27, 43, 62, 91, 75, 13, 20, 61, 68, 111, 110], [82.59235641183861], [30])))
+
+T best obj: 545.5807737289771
+T best iteration: 284
+T total iterations: 300
+T best time [s]: 2.237
+T total time [s]: 2.2701

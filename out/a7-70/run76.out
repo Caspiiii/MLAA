@@ -1,0 +1,70 @@
+EADARP version 2def-dirty
+ARGS: --ifile=EADARP/instances/l1/a7-70.txt --odir=EADARP/out/a7-70 --oname=run76
+Settings:
+--alns_gamma=0.025
+--alns_segment_size=100
+--alns_sigma1=10
+--alns_sigma2=9
+--alns_sigma3=3
+--at_most_one_s=false
+--gamma=-1.0
+--ifile=EADARP/instances/l1/a7-70.txt
+--insert_charging_otf=true
+--insert_cost_noise=0.014
+--lns_init_temp_factor=0.0
+--lns_temp_dec_factor=0.99
+--mh_checkit=false
+--mh_lfreq=0
+--mh_lnewinc=true
+--mh_tciter=-1
+--mh_tctime=-1.0
+--mh_titer=300
+--mh_tobj=-1.0
+--mh_ttime=-1.0
+--odir=EADARP/out/a7-70
+--oname=run76
+--only_single_s_visits=true
+--repair_max_routes=0
+--seed=1596769063
+--use_milp_in_otf=0
+--xcheck_isfeasible=false
+
+EADARPInstance(EADARP/instances/l1/a7-70.txt, n=70, n_K=7, S=[157, 158, 159], Q=14.85, n_F=7, γ=0.7, T_plan=600.0, F=[150, 151, 152, 153, 154, 155, 156])
+
+T preprocessing time [s]: 2.39494
+I       iter             best          obj_old          obj_new        time              method info
+I          1     100011.00000     100070.00000     100011.00000      0.2542                 con 
+I          3     100010.00000     100011.00000     100010.00000      0.4519        drrr_15+rrri 
+I          6     100008.00000     100010.00000     100008.00000      0.6178        drrr_15+rroi 
+I         14     100007.00000     100008.00000     100007.00000      1.0460         drrr_15+rrg 
+I         42     100006.00000     100007.00000     100006.00000      1.7950        drrr_15+rroi 
+I         44     100005.00000     100006.00000     100005.00000      1.8298        drrr_15+rroi 
+I        111     100004.00000     100005.00000     100004.00000      2.6945         drrr_15+rrg 
+I        163     100003.00000     100004.00000     100003.00000      2.9850         drrr_15+rrg 
+I        198     100002.00000     100003.00000     100002.00000      3.2981        drrr_15+rrri 
+I        300     100002.00000     100002.00000     100004.00000      3.7090         drrr_15+rrg 
+
+Method statistics
+S  method    iter  succ  succ-rate%  tot-obj-gain  avg-obj-gain  rel-succ%  net-time  net-time%  brut-time  brut-time%
+S  con          1     1   100.00000     -59.00000     -59.00000    5.88235   0.25418    6.85297    0.25418     6.85297
+S  drrr_15    299     8     2.67559      -9.00000      -0.03010   47.05882   0.00410    0.11067    0.00410     0.11067
+S  rrg         94     3     3.19149      -3.00000      -0.03191   17.64706   1.17299   31.62551    1.17299    31.62551
+S  rroi       103     3     2.91262      -4.00000      -0.03883   17.64706   1.06729   28.77562    1.06729    28.77562
+S  rrri       102     2     1.96078      -2.00000      -0.01961   11.76471   1.20887   32.59288    1.20887    32.59288
+S  SUM/AVG    599    17     2.83806     -77.00000      -0.12855   20.00000   3.70744   99.95766    3.70744    99.95766
+
+T best solution: EADARPSolution(t_routing=-1.0, t_excess=-1.0, obj_val=100002.0, obj_val_valid=true,
+    unserved_requests=[57, 1], F_visited=[156, 153, 150, 155, 151, 154, 152], S_visited=[159, 157, 158],
+    (1, ([143, 64, 134, 66, 136, 37, 34, 107, 104, 46, 116, 150], Float64[], Int64[]))
+    (2, ([144, 67, 51, 121, 137, 14, 84, 36, 31, 106, 101, 32, 102, 12, 15, 82, 85, 24, 94, 30, 100, 22, 92, 7, 77, 60, 130, 45, 115, 157, 151], [157.64320578537627], [30]))
+    (3, ([145, 50, 120, 9, 26, 79, 96, 43, 113, 5, 75, 21, 91, 69, 139, 39, 58, 109, 128, 159, 19, 52, 59, 129, 89, 122, 13, 28, 83, 98, 8, 78, 152], [134.33283191108706], [20]))
+    (4, ([146, 47, 2, 117, 72, 35, 16, 105, 25, 86, 95, 44, 114, 11, 81, 40, 110, 63, 133, 18, 48, 118, 88, 27, 6, 10, 97, 76, 80, 62, 53, 132, 123, 158, 153], [147.25367755970828], [34]))
+    (5, ([147, 20, 90, 42, 61, 112, 131, 56, 126, 65, 135, 55, 23, 125, 93, 154], Float64[], Int64[]))
+    (6, ([148, 29, 99, 38, 108, 68, 138, 33, 103, 3, 49, 73, 119, 155], Float64[], Int64[]))
+    (7, ([149, 70, 140, 41, 111, 17, 87, 54, 124, 4, 74, 156], Float64[], Int64[])))
+
+T best obj: 100002.0
+T best iteration: 198
+T total iterations: 300
+T best time [s]: 3.298
+T total time [s]: 3.7090

@@ -7,12 +7,11 @@ from sklearn.model_selection import train_test_split
 from sklearn import svm
 from sklearn.metrics import accuracy_score
 import dataprocessing as dp
-
+import matplotlib.pyplot as plt
 iris = datasets.load_iris()
 #split it in features and labels
 X = iris.data
 y = iris.target
-print(X[1])
 classes = ['Iris Setosa', 'Iris Versicolour', 'Iris Virginica']
 
 #hours of studying vs good/bad grades
@@ -46,17 +45,17 @@ inputVector = dp.create_input('b1/')
 X = []
 #yNp = np.array(inputVector).flatten()
 y = []
-#print(X)
+print(inputVector)
 
 for j in range(len(inputVector)):
-    y = y + inputVector[j][4::5]
+    y = y + inputVector[j][17::18]
 
 for i in range(len(inputVector)):
     dataPoint = []
     for j in range(len(inputVector[i])):
-        if (j + 1) % 5 != 0:
+        if (j + 1) % 18 != 0:
             dataPoint.append(inputVector[i][j])
-        if ((j + 1) % 5 == 0):
+        if ((j + 1) % 18 == 0):
             X.append(dataPoint)
             dataPoint = []
 
@@ -88,10 +87,67 @@ print(xNegative)
 print(len(xNegative))
 print("-----" * 40)
 
-
-
 X = np.vstack((xNegative, xPositive))
 y = np.hstack((yNegative, yPositive))
+print("-----" * 40)
+print("PLOTS")
+x = np.arange(len(X[:,0]))
+colors = ['red' if truth else 'blue' for truth in y]
+print("-----" * 40)
+print("Edgelength")
+plt.scatter(x, X[:,0], c=colors)
+plt.show()
+print("-----" * 40)
+print("Neighbourhood")
+plt.scatter(x, X[:,1], c=colors)
+plt.show()
+print("-----" * 40)
+print("Distance to starting point")
+plt.scatter(x, X[:,2], c=colors)
+plt.show()
+plt.scatter(x, X[:,3], c=colors)
+plt.show()
+plt.scatter(x, X[:,4], c=colors)
+plt.show()
+plt.scatter(x, X[:,5], c=colors)
+plt.show()
+plt.scatter(x, X[:,6], c=colors)
+plt.show()
+print("-----" * 40)
+print("Distance to destination point")
+plt.scatter(x, X[:,7], c=colors)
+plt.show()
+plt.scatter(x, X[:,8], c=colors)
+plt.show()
+plt.scatter(x, X[:,9], c=colors)
+plt.show()
+plt.scatter(x, X[:,10], c=colors)
+plt.show()
+plt.scatter(x, X[:,11], c=colors)
+plt.show()
+print("-----" * 40)
+print("Clusterness")
+plt.scatter(x, X[:,12], c=colors)
+plt.show()
+plt.scatter(x, X[:,13], c=colors)
+plt.show()
+print("-----" * 40)
+print("Charging station edge")
+plt.scatter(x, X[:,14], c=colors)
+plt.show()
+plt.scatter(x, X[:,15], c=colors)
+plt.show()
+plt.scatter(x, X[:,16], c=colors)
+plt.show()
+print("-----" * 40)
+#print("Alpha-nearness")
+#plt.scatter(x, X[:,17], c=colors)
+#plt.show()
+#plt.scatter(x, X[:,18], c=colors)
+#plt.show()
+#plt.scatter(x, X[:,19], c=colors)
+#plt.show()
+print("-----" * 40)
 print(X)
 print(len(X))
 print("-----" * 40)
@@ -109,3 +165,4 @@ predictions = model.predict(X_test)
 print(sum(predictions))
 acc = accuracy_score(y_test, predictions)
 print(acc)
+

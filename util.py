@@ -1,5 +1,6 @@
 import numpy as np
-
+import math as math
+import networkx as nx
 verticesStored = np.array([])
 
 
@@ -42,6 +43,12 @@ def extract_endingPoints(instance):
         endingPoints.append(verticesStored[i])
     return endingPoints
 
+def extract_ChargingStations(instance):
+    chargingStationIndex = instance[len(instance) - 9].split()
+    chargingStations = []
+    for i in range(len(chargingStationIndex)):
+        chargingStations.append(verticesStored[i])
+    return chargingStations
 
 def extract_objectiveFun(solution):
     objectiveFunction = find_lines_with_substring(solution, "T best obj:")
@@ -81,3 +88,59 @@ def extract_route(route):
             break
         verticeIndeces.append(int(s))
     return verticeIndeces
+
+def findSmallestDistance(points, point):
+    closest_point = None
+    smallest_distance = float('inf')  # Initialize with a very large number
+
+    for p in points:
+        distance = math.dist(p, point)
+        if distance < smallest_distance:
+            smallest_distance = distance
+            closest_point = p
+
+    return closest_point
+def findBiggestDistance(points, point):
+    furthest_point = None
+    biggest_distance = float('-inf')  # Initialize with a very large number
+
+    for p in points:
+        distance = math.dist(p, point)
+        if distance > biggest_distance:
+            biggest_distance = distance
+            furthest_point = p
+    return furthest_point
+
+def calculateMinimumSpanningTree():
+    edges = calculateWeightedEdges()
+    G = nx.Graph()
+    G.add_weighted_edges_from(edges)
+    mst = nx.minimum_spanning_tree(G)
+    return mst
+
+def calculateMinimumSpanningTreeWithEdge(firstIndex, secondIndex):
+    edges = calculateWeightedEdges()
+    G = nx.Graph()
+    G.add_weighted_edges_from(edges)
+    required_edge = (firstIndex, secondIndex)
+    # Check if the required edge is in the graph
+    if required_edge in G.edges or (required_edge[1], required_edge[0]) in G.edges:
+        # Decrease the weight of the required edge to ensure it is included in the MST
+        G[required_edge[0]][required_edge[1]]['weight'] = -1
+    mst = nx.minimum_spanning_tree(G)
+    return mst
+
+def calculateWeightedEdges():
+    edges = []
+    for i in range(len(verticesStored)):
+        for j in range(len(verticesStored)):
+            if i != j:
+                edges.append((i, j, math.dist(verticesStored[i], verticesStored[j])))
+    return edges
+
+def calculatealphaNearness(firstIndex, secondIndex):
+    mst = calculateMinimumSpanningTree()
+    mstWithEdge = calculateMinimumSpanningTreeWithEdge(firstIndex, secondIndex)
+    mstWeight = sum(edge[2]['weight'] for edge in mst.edges(data=True))
+    mstWithEdgeWeight = sum(edge[2]['weight'] for edge in mstWithEdge.edges(data=True)) + math.dist(verticesStored[firstIndex], verticesStored[secondIndex]) + 1
+    return mstWithEdgeWeight - mstWeight

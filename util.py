@@ -1,8 +1,9 @@
 import numpy as np
 import math as math
 import networkx as nx
+import os
 verticesStored = np.array([])
-
+timeWindowsStored = np.array([])
 
 def calculate_centroid(points):
     # Initialize sums
@@ -27,27 +28,27 @@ def calculate_centroid(points):
 def extract_startingPoints(instance):
     startingPointIndex = instance[len(instance) - 13]
     startingPointsIndex = [eval(i) for i in instance[len(instance) - 11].split()]
-    startingPointsIndex.append(startingPointIndex)
+    startingPointsIndex.append(eval(startingPointIndex))
     startingPoints = []
     for i in range(len(startingPointsIndex)):
-        startingPoints.append(verticesStored[i])
+        startingPoints.append(verticesStored[int(startingPointsIndex[i])])
     return startingPoints
 
 
 def extract_endingPoints(instance):
     endingPointIndex = instance[len(instance) - 12]
     endingPointsIndex = [eval(i) for i in instance[len(instance) - 10].split()]
-    endingPointsIndex.append(endingPointIndex)
+    endingPointsIndex.append(eval(endingPointIndex))
     endingPoints = []
     for i in range(len(endingPointsIndex)):
-        endingPoints.append(verticesStored[i])
+        endingPoints.append(verticesStored[int(endingPointsIndex[i])])
     return endingPoints
 
 def extract_ChargingStations(instance):
     chargingStationIndex = instance[len(instance) - 9].split()
     chargingStations = []
     for i in range(len(chargingStationIndex)):
-        chargingStations.append(verticesStored[i])
+        chargingStations.append(verticesStored[int(chargingStationIndex[i])-1])
     return chargingStations
 
 def extract_objectiveFun(solution):
@@ -68,6 +69,20 @@ def extract_vertices(instance):
     verticesStored = vertices
     return vertices
 
+def extract_timeWindow(instance):
+    timeWindow = []
+    file_path_time_windows = os.path.join("tightenedWindows/", instance)
+    if os.path.isfile(file_path_time_windows):
+        with open(file_path_time_windows, 'r') as file:
+            for line in file:
+                values = line.split(" ")
+                startTime = float(values[0])
+                endTime = float(values[1])
+                timeWindow.append((startTime, endTime))
+    global timeWindowsStored
+    timeWindowsStored = timeWindow
+    return timeWindow
+
 
 def find_lines_with_substring(solution, substring):
     result = []
@@ -84,7 +99,7 @@ def extract_route(route):
     withoutFirst = splitted[1:len(splitted) - 1]
     for s in withoutFirst:
         if "]" in s:
-            verticeIndeces.append(int(s[0:len(s) - 2]))
+            verticeIndeces.append(int(s[0:len(s) - 1]))
             break
         verticeIndeces.append(int(s))
     return verticeIndeces

@@ -1,19 +1,13 @@
-import math
-import random
-import util
 from sklearn import datasets
 import numpy as np
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn import svm
-from sklearn.metrics import accuracy_score
+from sklearn.svm import SVR, SVC
+from sklearn.metrics import mean_squared_error, r2_score, accuracy_score, confusion_matrix, classification_report, roc_curve, auc
+import joblib
 import dataprocessing as dp
 import matplotlib.pyplot as plt
-iris = datasets.load_iris()
-#split it in features and labels
-X = iris.data
-y = iris.target
-classes = ['Iris Setosa', 'Iris Versicolour', 'Iris Virginica']
-
+import pruning
 #hours of studying vs good/bad grades
 #10 different stidents
 #train a model with 8 students
@@ -29,6 +23,11 @@ def sparsify(input, size):
 
 
 
+
+#print(acc)
+#for i in range(len(predictions)):
+#print(classes[predictions[i]])
+"""
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
 model = svm.SVC()
@@ -36,16 +35,11 @@ model.fit(X_train, y_train)
 
 predictions = model.predict(X_test)
 acc = accuracy_score(y_test, predictions)
-#print(acc)
-#for i in range(len(predictions)):
-#print(classes[predictions[i]])
-
 inputVector = dp.create_input('b1/')
 ##Training
 X = []
 #yNp = np.array(inputVector).flatten()
 y = []
-print(inputVector)
 
 for j in range(len(inputVector)):
     y = y + inputVector[j][17::18]
@@ -58,7 +52,8 @@ for i in range(len(inputVector)):
         if ((j + 1) % 18 == 0):
             X.append(dataPoint)
             dataPoint = []
-
+            
+            
 yNp = np.array(y)
 XNp = np.array(X)
 yPositive = yNp[y]
@@ -155,7 +150,8 @@ print(y)
 print(len(y))
 print("-----" * 40)
 
-
+"""
+"""
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
 model = svm.SVC()
@@ -164,5 +160,263 @@ model.fit(X_train, y_train)
 predictions = model.predict(X_test)
 print(sum(predictions))
 acc = accuracy_score(y_test, predictions)
-print(acc)
+print("accuracy:", acc)
+"""
 
+###############################################################################################################################################################################################################
+##          Regression
+###############################################################################################################################################################################################################
+print("################################################################################################################################################################################################################################")
+print("## Regression")
+print("################################################################################################################################################################################################################################")
+
+
+
+
+inputVector = dp.create_input('l1/')
+
+y = []
+X = []
+print(len(inputVector))
+print(len(inputVector[0]))
+for j in range(len(inputVector)):
+    for i in range(len(inputVector[j])):
+        if (i+1) % 10 == 0:
+            y.append(inputVector[j][i])
+
+
+for i in range(len(inputVector)):
+    dataPoint = []
+    for j in range(len(inputVector[i])):
+        if (j + 1) % 10 != 0:
+            dataPoint.append(inputVector[i][j])
+        if ((j + 1) % 10 == 0):
+            X.append(dataPoint)
+            dataPoint = []
+print(np.array(y).shape)
+#print(X)
+yNp = np.array(y)
+XNp = np.array(X)
+yPositive = yNp[yNp > 1]
+xPositive = XNp[yNp > 1]
+yNpNegative = yNp[yNp <= 1]
+xNpNegative = XNp[yNp <= 1]
+yNegative = sparsify(yNpNegative, len(xPositive))
+xNegative = xNpNegative[np.random.choice(xNpNegative.shape[0], len(xPositive), replace=False)]
+X = np.vstack((xNegative, xPositive))
+y = np.hstack((yNegative, yPositive))
+print("Y: ")
+print(y)
+print(y)
+
+
+for i in range(9):
+    plt.scatter(y,  X[:,i], label='Actual Data')
+    plt.xlabel('Indices')
+    plt.ylabel('Feature')
+    plt.title('SVR Predictions vs Actual')
+    plt.legend()
+    plt.show()
+
+# Split the data into training and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+print(X_test.shape)
+print(len(X_test[:, 1]))
+print(len(y_test))
+
+
+# Initialize the SVR model with RBF kernel
+svr = SVR(kernel='rbf')
+
+# Define the parameter grid for GridSearchCV
+param_grid = {
+    'C': [0.1, 1, 10, 100],
+    'epsilon': [0.01, 0.1, 0.5, 1],
+    'gamma': ['scale', 'auto']
+}
+print("not yet fitted")
+# Initialize GridSearchCV
+grid_search = GridSearchCV(svr, param_grid, cv=5, scoring='neg_mean_squared_error')
+grid_search.fit(X_train, y_train)
+print("fitted")
+# Best parameters and model
+best_params = grid_search.best_params_
+print(f"Best Parameters: {best_params}")
+best_svr = grid_search.best_estimator_
+
+# Predict using the best model
+y_pred = best_svr.predict(X_test)
+print(y_pred)
+# Calculate Mean Squared Error and R-squared
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+
+print(f"Mean Squared Error: {mse:.3f}")
+print(f"R^2 Score: {r2:.3f}")
+joblib_file = "svr_model.pkl"
+joblib.dump(best_svr, joblib_file)
+"""
+"""
+# Scatter plot of actual vs predicted values
+for i in range(9):
+    plt.scatter(X_test[:,i], y_test, color='black', label='Actual Data')
+    plt.scatter(X_test[:,i], y_pred, color='red', label='Predicted Data')
+    plt.xlabel('Feature')
+    plt.ylabel('Target')
+    plt.title('SVR Predictions vs Actual')
+    plt.legend()
+    plt.show()
+
+###############################################################################################################################################################################################################
+##          Classification
+###############################################################################################################################################################################################################
+print("################################################################################################################################################################################################################################")
+print("## Classification")
+print("################################################################################################################################################################################################################################")
+
+
+"""
+# Initialize arrays to store lines from files
+inputVector = dp.create_input('l1/')
+
+y = []
+X = []
+print(len(inputVector))
+print(len(inputVector[0]))
+for j in range(len(inputVector)):
+    for i in range(len(inputVector[j])):
+        if (i+1) % 10 == 0:
+            y.append(inputVector[j][i])
+
+for i in range(len(inputVector)):
+    dataPoint = []
+    for j in range(len(inputVector[i])):
+        if (j + 1) % 10 != 0:
+            dataPoint.append(inputVector[i][j])
+        if ((j + 1) % 10 == 0):
+            X.append(dataPoint)
+            dataPoint = []
+
+print(np.array(y).shape)
+yNp = np.array(y)
+XNp = np.array(X)
+yPositive = yNp[yNp > 0]
+xPositive = XNp[yNp > 0]
+yNpNegative = yNp[yNp <= 0]
+xNpNegative = XNp[yNp <= 0]
+yNegative = sparsify(yNpNegative, len(xPositive))
+xNegative = xNpNegative[np.random.choice(xNpNegative.shape[0], len(xPositive), replace=False)]
+X = np.vstack((xNegative, xPositive))
+y = np.hstack((yNegative, yPositive))
+
+print("Y: ")
+print(y)
+
+# Scatter plot of features colored by class
+for i in range(9):
+    plt.scatter(range(len(y)), X[:, i], color=[["black", "red"][int(value)] for value in y], label='Data Points')
+    plt.xlabel('Indices')
+    plt.ylabel(f'Feature {i+1}')
+    plt.title(f'Feature {i+1} Scatter Plot')
+    plt.legend()
+    plt.show()
+
+# Split the data into training and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+print(X_test.shape)
+print(len(X_test[:, 1]))
+print(len(y_test))
+
+# Initialize the SVM model for classification
+svm = SVC(probability=True)
+
+# Define the parameter grid for GridSearchCV
+"""
+param_grid = {
+    'C': [0.1, 1, 10, 100],
+    'kernel': ['linear', 'rbf', 'poly'],
+    'gamma': ['scale', 'auto']
+}
+"""
+param_grid = {'C': [0.1, 1, 10, 100, 1000],
+              'gamma': [1, 0.1, 0.01, 0.001, 0.0001],
+              'kernel': ['rbf']}
+
+print("Starting GridSearchCV for SVM")
+# Initialize GridSearchCV
+grid_search = GridSearchCV(svm, param_grid, refit = True, verbose = 3)
+grid_search.fit(X_train, y_train)
+print("GridSearchCV completed")
+
+# Best parameters and model
+best_params = grid_search.best_params_
+print(f"Best Parameters: {best_params}")
+best_svm = grid_search.best_estimator_
+
+# Predict using the best model
+y_pred = best_svm.predict(X_test)
+print(y_pred)
+
+# Calculate accuracy and other classification metrics
+accuracy = accuracy_score(y_test, y_pred)
+conf_matrix = confusion_matrix(y_test, y_pred)
+class_report = classification_report(y_test, y_pred)
+
+print(f"Accuracy: {accuracy:.3f}")
+print("Confusion Matrix:")
+print(conf_matrix)
+print("Classification Report:")
+print(class_report)
+
+y_proba = best_svm.predict_proba(X_test)[:, 1]
+
+# Compute ROC curve and ROC area
+fpr, tpr, thresholds = roc_curve(y_test, y_proba)
+roc_auc = auc(fpr, tpr)
+
+# Plot ROC curve
+plt.figure()
+plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
+plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver Operating Characteristic')
+plt.legend(loc="lower right")
+for i, txt in enumerate(thresholds):
+    if i % 5 == 0:  # Annotate every 5th threshold for clarity
+        plt.annotate(f'{txt:.2f}', (fpr[i], tpr[i]), textcoords="offset points", xytext=(-10,-10), ha='center')
+plt.show()
+
+
+# Save the trained SVM model
+joblib_file = "svm_model.pkl"
+joblib.dump(best_svm, joblib_file)
+
+# Scatter plot of actual vs predicted values for features
+for i in range(9):
+    plt.scatter(X_test[:, i], y_test, color='black', label='Actual Data')
+    plt.scatter(X_test[:, i], y_pred, color='red', label='Predicted Data')
+    plt.xlabel(f'Feature {i+1}')
+    plt.ylabel('Target')
+    plt.title(f'SVM Classification: Actual vs Predicted (Feature {i+1})')
+    plt.legend()
+    plt.show()
+
+"""
+
+
+###############################################################################################################################################################################################################
+##          Pruning
+###############################################################################################################################################################################################################
+
+
+loaded_model = joblib.load("svr_model.pkl")
+pruning.process_directory_and_predict_svr(loaded_model, "l1/", 50)
+
+"""
+loaded_model = joblib.load("svm_model.pkl")
+pruning.process_directory_and_predict_svm(loaded_model, "l1/")
+"""

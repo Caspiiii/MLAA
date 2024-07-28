@@ -11,6 +11,25 @@ startingPointsCenter = np.array([])
 destinationPointsCenter = np.array([])
 import math
 
+def is_connected(graph):
+    """Check if the graph is connected using DFS."""
+    n = len(graph)
+    visited = [False] * n
+
+    def dfs(v):
+        stack = [v]
+        while stack:
+            node = stack.pop()
+            if not visited[node]:
+                visited[node] = True
+                stack.extend(neighbor for neighbor, connected in enumerate(graph[node]) if connected and not visited[neighbor])
+
+    # Start from the first vertex
+    dfs(0)
+
+    # Check if all vertices are visited
+    return all(visited)
+
 def feature_extractor(i, j):
 
     dataPoint = []
@@ -101,7 +120,8 @@ def process_directory_and_predict_svr(svr_model, directory_path, l_percent):
             output_array = predict_top_percent_svr(svr_model, l_percent,
                                                  vertices, startingPoints, destinationPoints, chargingStationPoints,
                                                  timeWindows)
-
+            if not is_connected(output_array):
+                output_array = "failed"
             output_file_path = os.path.join("prunedArcs/", f"{filename}")
 
             # Save the output_array to the text file
@@ -165,6 +185,12 @@ def predict_top_percent_svr(svr_model, percent, v, st, des,
     threshold_value = np.partition(flat_predictions, threshold_index)[threshold_index]
     # Create the output array based on the threshold
     output_array = (predictions > threshold_value).astype(int)
+    mst = util.calculateMinimumSpanningTree()
+    for n in mst:
+        for m in mst:
+            if (n != m):
+                output_array = 1
+
 
     return output_array
 

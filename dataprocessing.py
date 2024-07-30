@@ -113,7 +113,7 @@ def create_input(path):
                         print("-----" * 40)
                         # charging station edge
                         #dataPoint.append(vertices[i] in chargingStationPoints)
-                        dataPoint.append(vertices[j] in chargingStationPoints)
+                        #dataPoint.append(vertices[j] in chargingStationPoints)
                         #dataPoint.append(vertices[j] in chargingStationPoints and vertices[i] in chargingStationPoints)
                         #print("Calculating Alpha-Nearness")
                         #print("-----" * 40)
@@ -243,14 +243,27 @@ def create_labels(path, length):
             fileCounter += 1
     return labels
 
+"""
+The difference for create_labels_simple is that here the quality of the solution is not taken into account.
+ Here there is only one solution that is used and a label is 0 if the edge is not part of the solution and
+ 1 if the edge is part of the solution.
+"""
 def create_labels_simple(path, length):
     labels = np.zeros([length, length])
-    file = sorted(os.listdir(path))[1]
-    print(file)
-    file_path = os.path.join(path, file)
-    with open(file_path, 'r') as file:
-        contents = file.readlines()
-        routes = contents[1:len(contents)]
+    #file = sorted(os.listdir(path))[1]
+    #print(file)
+    files = os.listdir(path)
+    for filename in files:
+        if filename.endswith('.sol'):
+            # Create the full path to the file
+            file_path = os.path.join(path, filename)
+
+            # Check if it's a file (and not a directory)
+            if os.path.isfile(file_path):
+                # Open the file
+                with open(file_path, 'r') as file:
+                    contents = file.readlines()
+                    routes = contents[1:len(contents)]
         with open(path[len(path) - 5:len(path) - 1] + " output.txt", "w") as txt_file:
             for route in routes:
                 verticeIndices = util.extract_route(route)

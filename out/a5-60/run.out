@@ -1,0 +1,99 @@
+EADARP version 585c-dirty
+ARGS: --ifile=EADARP/instances/l1/a5-60.txt --infeasible_arcs=EADARP/infeasible_arcs --gamma=0.7 --only_single_s_visits=false --odir=EADARP/out/a5-60 --oname=run
+Settings:
+--alns_gamma=0.025
+--alns_segment_size=100
+--alns_sigma1=10
+--alns_sigma2=9
+--alns_sigma3=3
+--at_most_one_s=false
+--gamma=0.7
+--ifile=EADARP/instances/l1/a5-60.txt
+--infeasible_arcs=EADARP/infeasible_arcs
+--insert_charging_otf=true
+--insert_cost_noise=0.014
+--lns_init_temp_factor=0.0
+--lns_temp_dec_factor=0.99
+--mh_checkit=false
+--mh_lfreq=0
+--mh_lnewinc=true
+--mh_tciter=-1
+--mh_tctime=-1.0
+--mh_titer=100000
+--mh_tobj=-1.0
+--mh_ttime=-1.0
+--odir=EADARP/out/a5-60
+--oname=run
+--only_single_s_visits=false
+--repair_max_routes=0
+--seed=1246658796
+--use_milp_in_otf=0
+--xcheck_isfeasible=false
+
+EADARPInstance(EADARP/instances/l1/a5-60.txt, n=60, n_K=5, S=[133, 134, 135], Q=14.85, n_F=5, γ=0.7, T_plan=720.0, F=[128, 129, 130, 131, 132])
+
+T preprocessing time [s]: 2.02753
+I       iter             best          obj_old          obj_new        time              method info
+I          1        812.39094     100060.00000        812.39094      0.1528                 con 
+I          5        798.70050        812.39094        798.70050      0.2801         drrr_15+rrg 
+I          6        788.01689        798.70050        788.01689      0.3334        drrr_15+rrri 
+I          7        775.66308        788.01689        775.66308      0.3518        drrr_15+rrri 
+I          8        772.03927        775.66308        772.03927      0.3709        drrr_15+rrri 
+I          9        766.72248        772.03927        766.72248      0.3864        drrr_15+rroi 
+I         11        759.93987        766.72248        759.93987      0.4145        drrr_15+rroi 
+I         12        758.45263        759.93987        758.45263      0.4241        drrr_15+rroi 
+I         13        754.14141        758.45263        754.14141      0.4503        drrr_15+rroi 
+I         14        753.52044        754.14141        753.52044      0.4670        drrr_15+rroi 
+I         16        747.80665        753.52044        747.80665      0.4813        drrr_15+rroi 
+I         21        743.35055        747.80665        743.35055      0.5245         drrr_15+rrg 
+I         22        738.17985        743.35055        738.17985      0.5314         drrr_15+rrg 
+I         23        736.00694        738.17985        736.00694      0.5465        drrr_15+rroi 
+I         25        721.52611        736.00694        721.52611      0.5627        drrr_15+rroi 
+I         26        719.61697        721.52611        719.61697      0.5723         drrr_15+rrg 
+I         32        717.07148        719.61697        717.07148      0.6564        drrr_15+rroi 
+I         41        716.24919        717.07148        716.24919      0.7492        drrr_15+rroi 
+I         42        714.82999        716.24919        714.82999      0.7532        drrr_15+rrri 
+I         45        714.38177        714.82999        714.38177      0.7936         drrr_15+rrg 
+I         49        712.80707        714.38177        712.80707      0.8679        drrr_15+rroi 
+I         50        711.32226        712.80707        711.32226      0.8695        drrr_15+rroi 
+I         51        710.90244        711.32226        710.90244      0.8768        drrr_15+rrri 
+I         65        710.40381        710.90244        710.40381      0.9339        drrr_15+rroi 
+I        147        709.25303        710.40381        709.25303      1.1217        drrr_15+rrri 
+I        153        707.59463        709.25303        707.59463      1.1327        drrr_15+rrri 
+I        188        706.97540        707.59463        706.97540      1.1946        drrr_15+rroi 
+I       1308        701.22503        706.97540        701.22503      2.1389         drrr_15+rrg 
+I       1334        699.51429        701.22503        699.51429      2.1459        drrr_15+rrri 
+I       1389        698.89506        699.51429        698.89506      2.2085        drrr_15+rrri 
+I       6282        698.14357        698.89506        698.14357      4.4061        drrr_15+rrri 
+I       6284        697.76089        698.14357        697.76089      4.4194        drrr_15+rroi 
+I       6303        697.59891        697.76089        697.59891      4.4452        drrr_15+rrri 
+I       7815        697.27057        697.59891        697.27057      5.3556        drrr_15+rrri 
+I      10463        690.50722        697.27057        690.50722      6.3881         drrr_15+rrg 
+I      39388        689.33849        690.50722        689.33849     15.4286         drrr_15+rrg 
+I      67970        687.10170        689.33849        687.10170     25.0132         drrr_15+rrg 
+ERROR: ERROR: InterruptException:
+Stacktrace:
+  [1] display_repl_error(io::IOStream, stack::VSCodeServer.EvalErrorStack; unwrap::Bool)
+    @ VSCodeServer ~/.vscode/extensions/julialang.language-julia-1.79.2/scripts/packages/VSCodeServer/src/repl.jl:261
+  [2] (::VSCodeServer.var"#69#74"{Bool, Bool, Bool, Module, String, Int64, Int64, String, VSCodeServer.ReplRunCodeRequestParams})()
+    @ VSCodeServer ~/.vscode/extensions/julialang.language-julia-1.79.2/scripts/packages/VSCodeServer/src/eval.jl:224
+  [3] withpath(f::VSCodeServer.var"#69#74"{Bool, Bool, Bool, Module, String, Int64, Int64, String, VSCodeServer.ReplRunCodeRequestParams}, path::String)
+    @ VSCodeServer ~/.vscode/extensions/julialang.language-julia-1.79.2/scripts/packages/VSCodeServer/src/repl.jl:276
+  [4] (::VSCodeServer.var"#68#73"{Bool, Bool, Bool, Module, String, Int64, Int64, String, VSCodeServer.ReplRunCodeRequestParams})()
+    @ VSCodeServer ~/.vscode/extensions/julialang.language-julia-1.79.2/scripts/packages/VSCodeServer/src/eval.jl:179
+  [5] hideprompt(f::VSCodeServer.var"#68#73"{Bool, Bool, Bool, Module, String, Int64, Int64, String, VSCodeServer.ReplRunCodeRequestParams})
+    @ VSCodeServer ~/.vscode/extensions/julialang.language-julia-1.79.2/scripts/packages/VSCodeServer/src/repl.jl:38
+  [6] (::VSCodeServer.var"#67#72"{Bool, Bool, Bool, Module, String, Int64, Int64, String, VSCodeServer.ReplRunCodeRequestParams})()
+    @ VSCodeServer ~/.vscode/extensions/julialang.language-julia-1.79.2/scripts/packages/VSCodeServer/src/eval.jl:150
+  [7] with_logstate(f::Function, logstate::Any)
+    @ Base.CoreLogging ./logging.jl:515
+  [8] with_logger
+    @ ./logging.jl:627 [inlined]
+  [9] (::VSCodeServer.var"#66#71"{VSCodeServer.ReplRunCodeRequestParams})()
+    @ VSCodeServer ~/.vscode/extensions/julialang.language-julia-1.79.2/scripts/packages/VSCodeServer/src/eval.jl:263
+ [10] #invokelatest#2
+    @ ./essentials.jl:892 [inlined]
+ [11] invokelatest(::Any)
+    @ Base ./essentials.jl:889
+ [12] (::VSCodeServer.var"#64#65")()
+    @ VSCodeServer ~/.vscode/extensions/julialang.language-julia-1.79.2/scripts/packages/VSCodeServer/src/eval.jl:34

@@ -68,7 +68,7 @@ def feature_extractor(i, j):
     dataPoint.append(edge_length <= 5)
     # Charging station edge
     #dataPoint.append(vertices[i] in chargingStationPoints)
-    dataPoint.append(vertices[j] in chargingStationPoints)
+    #dataPoint.append(vertices[j] in chargingStationPoints)
     #dataPoint.append(vertices[i] in chargingStationPoints and vertices[j] in chargingStationPoints)
 
     # Time windows
@@ -184,13 +184,14 @@ def predict_top_percent_svr(svr_model, percent, v, st, des,
     threshold_index = int((1 - percent / 100.0) * len(flat_predictions))
     threshold_value = np.partition(flat_predictions, threshold_index)[threshold_index]
     # Create the output array based on the threshold
-    output_array = (predictions > threshold_value).astype(int)
+    output_array = (predictions >= threshold_value).astype(int)
     mst = util.calculateMinimumSpanningTree()
-    for n in mst:
-        for m in mst:
-            if (n != m):
-                output_array = 1
+    for edge in mst.edges():
+        u, v = edge
+        output_array[u, v] = 1
 
+    if not is_connected(predictions):
+        output_array = "failed"
 
     return output_array
 
@@ -214,7 +215,6 @@ def process_directory_and_predict_svm(svm_model, directory_path):
                 contents = file.readlines()
                 nodes = contents[1:len(contents) - 13]
 
-            # Assuming util functions for extracting necessary data
             vertices = util.extract_vertices(nodes)
             timeWindows = util.extract_timeWindow(filename)
             startingPoints = util.extract_startingPoints(contents)
@@ -223,12 +223,11 @@ def process_directory_and_predict_svm(svm_model, directory_path):
 
             # Create an n x n array based on the number of vertices
             n = len(vertices)
-            input_array = np.random.rand(n, n)  # Example random array, replace with actual data if available
 
-            # Call the predict_top_percent_svr function (renamed to predict_top_percent_svm)
             output_array = predict_top_percent_svm(svm_model,
                                                    vertices, startingPoints, destinationPoints, chargingStationPoints,
                                                    timeWindows)
+            print(output_array)
 
             output_file_path = os.path.join("prunedArcs/", f"{filename}")
 
@@ -272,8 +271,6 @@ def predict_top_percent_svm(svm_model, v, st, des, ch, time):
     startingPointsCenter = util.calculate_centroid(startingPoints)
     destinationPointsCenter = util.calculate_centroid(destinationPoints)
 
-    output_array = np.zeros((n, n))
-
     # Generate predictions
     for i in range(n):
         for j in range(n):
@@ -283,7 +280,15 @@ def predict_top_percent_svm(svm_model, v, st, des, ch, time):
                 predictions[i, j] = 1
             else:
                 feature_vector = feature_extractor(i, j)
-                prediction = svm_model.predict([feature_vector])
+                y_proba = svm_model.predict_proba([feature_vector])[:, 1]
+                threshold = 0.0003
+                prediction = (y_proba >= threshold).astype(int)
                 predictions[i, j] = prediction
+    mst = util.calculateMinimumSpanningTree()
+    for edge in mst.edges():
+        u, v = edge
+        predictions[u, v] = 1
 
+    if not is_connected(predictions):
+        predictions = "failed"
     return predictions

@@ -28,8 +28,8 @@ for i in range(len(directories_original)):
     original_best_obj = []
     pruned_best_obj = []
     directory = directories_original[i]
-
     # Get all txt files in the directory
+    print(directory)
     files = os.listdir("out/" + directory)
     for file in files:
         if file.endswith('.out'):
@@ -41,8 +41,8 @@ for i in range(len(directories_original)):
                 original_best_obj.append(float(objective_value_line[11:len(objective_value_line) - 1]))
                 original_total_time.append(float(total_run_time[18:len(total_run_time) - 1]))
 
-    original_best_obj = original_best_obj[0:30]
-    original_total_time = original_total_time[0:30]
+    original_best_obj = original_best_obj[0:20]
+    original_total_time = original_total_time[0:20]
 
     directory = directories_pruned[i]
     files = os.listdir("prunedArcs/out/" + directory)

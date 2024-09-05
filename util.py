@@ -4,6 +4,7 @@ import networkx as nx
 import os
 verticesStored = np.array([])
 timeWindowsStored = np.array([])
+infeasible_arcs_stored = np.array([])
 
 def calculate_centroid(points):
     # Initialize sums
@@ -83,6 +84,17 @@ def extract_timeWindow(instance):
     timeWindowsStored = timeWindow
     return timeWindow
 
+def extract_infeasible_arcs(instance):
+    infeasible_arcs = []
+    file_path_infeasible_arcs = os.path.join("infeasibleArcs/", instance)
+    with open(file_path_infeasible_arcs, 'r') as file:
+        for line in file:
+            values = line.split(" ")
+            infeasible_arcs.append([1 if value == "true" else 0 for value in values[0:-1]])
+    global infeasible_arcs_stored
+    infeasible_arcs_stored = infeasible_arcs
+    print(np.array(infeasible_arcs).shape)
+    return np.array(infeasible_arcs).flatten()
 
 def find_lines_with_substring(solution, substring):
     result = []
@@ -159,3 +171,22 @@ def calculatealphaNearness(firstIndex, secondIndex):
     mstWeight = sum(edge[2]['weight'] for edge in mst.edges(data=True))
     mstWithEdgeWeight = sum(edge[2]['weight'] for edge in mstWithEdge.edges(data=True)) + math.dist(verticesStored[firstIndex], verticesStored[secondIndex]) + 1
     return mstWithEdgeWeight - mstWeight
+def generate_random_pruned_array(n, p):
+    total_elements = n * n
+    num_ones = int(total_elements * p / 100)
+    array = np.zeros(total_elements, dtype=int)
+    array[:num_ones] = 1
+    np.random.shuffle(array)
+    array = array.reshape((n, n))
+    return array
+def calculateDistanceArray(vertices):
+    vertice_array_1 = np.array(vertices)
+    vertice_array_2 = np.array(vertices)
+    return np.linalg.norm(vertice_array_1[:, np.newaxis, :] - vertice_array_2[np.newaxis, :, :], axis=2)
+
+def calculateNeighborhoodArray(vertices, distances):
+    sorted_indices = np.argsort(distances, axis=1)
+    #print(sorted_indices)
+    #print(np.array(vertices))
+    return vertices[sorted_indices]
+

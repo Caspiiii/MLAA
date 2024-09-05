@@ -26,7 +26,7 @@ def create_input(path):
 
             # calculate the labels for the input
             solutionsName = filename[0:len(filename) - 4]
-            labels = create_labels("out/" + solutionsName + "/", len(nodes))
+            labels = create_labels_simple("out/" + solutionsName + "/", len(nodes))
             #print(labels[0])
             #print(np.sum(labels))
             #print("-" * 80)
@@ -57,13 +57,13 @@ def create_input(path):
             for i in range(len(vertices)):
                 sortedNeighbourhood = calculate_neighbourhood(vertices[i], vertices)
                 for j in range(len(vertices)):
+                    if infeasibleEdges[i][j] == 'true':
+                        continue
                     dataPoint = []
                     if vertices[i] in startingPoints or vertices[i] in destinationPoints or vertices[i] in chargingStationPoints:
                         continue
                     if vertices[j] in startingPoints or vertices[j] in destinationPoints or vertices[j] in chargingStationPoints:
                         continue
-                    #if infeasibleEdges[i][j] == 'true':
-                    #    continue
                     print("Calculating Edge Length")
                     print("-----" * 40)
                     if i != j:
@@ -75,7 +75,7 @@ def create_input(path):
                         print("Calculating Nearness of Nodes")
                         print("-----" * 40)
                         # nearness of nodes
-                        dataPoint.append(calculate_nearness(vertices[i], sortedNeighbourhood))
+                        #dataPoint.append(calculate_nearness(vertices[j], sortedNeighbourhood))
                         # distance from start
                         # Typically there are more than one starting point
                         # To look at the distance from the start we take the geometric center of all starting points
@@ -107,14 +107,16 @@ def create_input(path):
                         print("-----" * 40)
                         # density
                         #
-                        dataPoint.append(calculate_clusterness(vertices[i], vertices, 5))
-                        dataPoint.append(math.dist(vertices[i], vertices[j]) <= 5)
+                        #dataPoint.append(calculate_clusterness(vertices[i], vertices, 5))
+                        #dataPoint.append(math.dist(vertices[i], vertices[j]) <= 5)
                         print("Calculating Charging Station Edge")
                         print("-----" * 40)
                         # charging station edge
-                        #dataPoint.append(vertices[i] in chargingStationPoints)
-                        #dataPoint.append(vertices[j] in chargingStationPoints)
-                        #dataPoint.append(vertices[j] in chargingStationPoints and vertices[i] in chargingStationPoints)
+                        """
+                        dataPoint.append(vertices[i] in chargingStationPoints)
+                        dataPoint.append(vertices[j] in chargingStationPoints)
+                        dataPoint.append(vertices[j] in chargingStationPoints and vertices[i] in chargingStationPoints)
+                        """
                         #print("Calculating Alpha-Nearness")
                         #print("-----" * 40)
                         #alphanearness
@@ -127,18 +129,18 @@ def create_input(path):
                         #timewindows
                         if (vertices[j] in chargingStationPoints or vertices[j] in startingPoints or vertices[j] in destinationPoints):
                             dataPoint.append(0)
-                            dataPoint.append(0)
-                            dataPoint.append(0)
-                            dataPoint.append(0)
+                            #dataPoint.append(0)
+                            #dataPoint.append(0)
+                            #dataPoint.append(0)
                             #plt.scatter(i, timeWindows[i][0] - timeWindows[j][0], color='black',
                              #           label='Single Point')
 
                         else:
                             dataPoint.append(
                                 ((timeWindows[i][1] - timeWindows[j][1]) + (timeWindows[i][0] - timeWindows[j][0])) / 2)
-                            dataPoint.append(timeWindows[i][1] - timeWindows[j][1])
-                            dataPoint.append(timeWindows[i][0] - timeWindows[j][0])
-                            dataPoint.append(timeWindows[i][1] - timeWindows[j][0])
+                            #dataPoint.append(timeWindows[i][1] - timeWindows[j][1])
+                            #dataPoint.append(timeWindows[i][0] - timeWindows[j][0])
+                            #dataPoint.append(timeWindows[i][1] - timeWindows[j][0])
                         #if (labels[i, j] == 1):
                             #plt.scatter(j, timeWindows[i][0] - timeWindows[j][0],color='red',
                             #        label='Single Point')
@@ -194,7 +196,6 @@ def create_input(path):
 
 
 def create_labels(path, length):
-    # Extract Solution
     directory_path = path
     files = os.listdir(directory_path)
     labels = np.zeros([length, length])
@@ -202,7 +203,6 @@ def create_labels(path, length):
     weights = np.zeros(math.floor(len(files)/2))
     for filename in files:
         if filename.endswith('.out'):
-            # Create the full path to the file
             file_path = os.path.join(directory_path, filename)
 
             # Check if it's a file (and not a directory)
@@ -223,12 +223,10 @@ def create_labels(path, length):
     fileCounter = 0
     for filename in files:
         if filename.endswith('.sol'):
-            # Create the full path to the file
             file_path = os.path.join(directory_path, filename)
 
             # Check if it's a file (and not a directory)
             if os.path.isfile(file_path):
-                # Open the file
                 with open(file_path, 'r') as file:
                     # calculate weightings
                     contents = file.readlines()
@@ -264,15 +262,15 @@ def create_labels_simple(path, length):
                 with open(file_path, 'r') as file:
                     contents = file.readlines()
                     routes = contents[1:len(contents)]
-        with open(path[len(path) - 5:len(path) - 1] + " output.txt", "w") as txt_file:
-            for route in routes:
-                verticeIndices = util.extract_route(route)
-                for i in range(len(verticeIndices)-1):
-                    labels[verticeIndices[i]-1, verticeIndices[i+1]-1] = 1
-                #labels[verticeIndices[-1]-1, verticeIndices[0]-1] = 1
-                for line in verticeIndices:
-                    txt_file.write(str(line) + ", ")
-                txt_file.write("\n")
+                with open(path[len(path) - 5:len(path) - 1] + " output.txt", "w") as txt_file:
+                    for route in routes:
+                        verticeIndices = util.extract_route(route)
+                        for i in range(len(verticeIndices)-1):
+                            labels[verticeIndices[i]-1, verticeIndices[i+1]-1] = 1
+                        #labels[verticeIndices[-1]-1, verticeIndices[0]-1] = 1
+                        for line in verticeIndices:
+                            txt_file.write(str(line) + ", ")
+                        txt_file.write("\n")
     return labels
 def calculate_neighbourhood(vertice, neighbourhood):
     v = vertice

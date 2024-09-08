@@ -169,7 +169,7 @@ print("## Regression")
 print("################################################################################################################################################################################################################################")
 
 
-
+"""
 
 inputVector = dp.create_input('l1/')
 
@@ -280,7 +280,7 @@ for i in range(X_test.shape[1]):
     plt.legend()
     plt.show()
 
-
+"""
 ###############################################################################################################################################################################################################
 ##          Classification
 ###############################################################################################################################################################################################################
@@ -364,7 +364,7 @@ grid_search = GridSearchCV(pipeline, param_grid, cv=5, scoring='accuracy', n_job
 # Fit the model using GridSearchCV to find the best hyperparameters
 grid_search.fit(X_train, y_train)
 
-"""
+
 svm = LinearSVC(dual="auto")
 
 
@@ -383,7 +383,6 @@ print("Starting GridSearchCV for SVM")
 grid_search = GridSearchCV(svm, param_grid, scoring='accuracy', verbose = 3, cv=5)
 grid_search.fit(X_train, y_train)
 print("GridSearchCV completed")
-"""
 # Best parameters and model
 best_params = grid_search.best_params_
 print(f"Best Parameters: {best_params}")
@@ -458,6 +457,8 @@ for i in range(length-1):
     plt.title(f'SVM Classification: Actual vs Predicted (Feature {i+1})')
     plt.legend()
     plt.show()
+    
+
 
 ###############################################################################################################################################################################################################
 ##          Pruning
@@ -508,7 +509,7 @@ X_test = scaler.transform(X_test)
 y_pred = loaded_model.predict(X_test)
 print(y_pred)
 """
-pruning.process_directory_and_predict_svr(loaded_model, "l1/", 80)
+#pruning.process_directory_and_predict_svr(loaded_model, "l1/", 80)
 #pruning.process_directory_and_predict_svr(loaded_model, "l2/", 80)
 
 

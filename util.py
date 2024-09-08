@@ -35,6 +35,8 @@ def extract_startingPoints(instance):
         startingPoints.append(verticesStored[int(startingPointsIndex[i])])
     return startingPoints
 
+def extract_first_startingPoints_index(instance):
+    return int(instance[len(instance) - 13])
 
 def extract_endingPoints(instance):
     endingPointIndex = instance[len(instance) - 12]

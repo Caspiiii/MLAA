@@ -11,7 +11,8 @@ import joblib
 import dataprocessing as dp
 import matplotlib.pyplot as plt
 import pruning
-
+import pickle
+import json
 
 ## Deal with data being heavily inbalanced (a lot more negative)
 def sparsify(input, size):
@@ -402,6 +403,13 @@ print(conf_matrix)
 print("Classification Report:")
 print(class_report)
 
+model_params = {
+    "coef": best_svm.coef_.tolist(),
+    "intercept": best_svm.intercept_.tolist(),
+}
+
+with open('linear_svc_params.json', 'w') as f:
+    json.dump(model_params, f)
 
 joblib_file = "svm_only_linear_one_time_metric.pkl"
 joblib.dump(best_svm, joblib_file)
@@ -465,7 +473,7 @@ for i in range(length-1):
 ###############################################################################################################################################################################################################
 
 
-loaded_model = joblib.load("svr_model_one_time_metric.pkl")
+#loaded_model = joblib.load("svr_model_one_time_metric.pkl")
 """
 inputVector = dp.create_input('l1/')
 
@@ -515,4 +523,4 @@ print(y_pred)
 
 
 loaded_model = joblib.load("svm_only_linear_one_time_metric.pkl")
-pruning.process_directory_and_predict_svm(loaded_model, "l2/")
+pruning.process_directory_and_predict_svm(loaded_model, "l1/")

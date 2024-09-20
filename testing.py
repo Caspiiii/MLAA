@@ -3,23 +3,58 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import linregress
+from scipy import stats
 
 # Initialize arrays to store lines from files
 original_best_obj = []
 pruned_best_obj = []
 original_total_time = []
 pruned_total_time = []
+invalid_options = ["a180-3600_26.out", "a200-4000_35.out", "a220-4400_05.out",
+                   "a240-4800_10.out", "a260-5200_25.out", "a260-5200_04.out"]
 
 
 def calculate_statistics(array, name):
     mean = np.mean(array)
+    median = np.median(array)
     variance = np.var(array)
     std_dev = np.std(array)
-    print(f"{name} - Mean: {mean:.3f}, Variance: {variance:.3f}, Standard Deviation: {std_dev:.3f}")
+    return {
+        "name": name,
+        "mean": mean,
+        "median": median,
+        "variance": variance,
+        "std_dev": std_dev
+    }
 
 
-directories_original = os.listdir("out/")
-directories_pruned = os.listdir("prunedArcs/out")
+def percentage_difference(original_value, pruned_value):
+    if original_value != 0:
+        return ((original_value - pruned_value) / original_value) * 100
+    return 0  # Avoid division by zero
+
+
+def compare_statistics(original, pruned, original_name, pruned_name, instance_name):
+    # Calculate statistics for original and pruned lists
+    original_stats = calculate_statistics(original, original_name)
+    pruned_stats = calculate_statistics(pruned, pruned_name)
+
+    # Print comparison results
+    print(f"Comparison between {original_name} and {pruned_name} for {instance_name}:")
+    print(f"{'Statistic':<20} {'Original':<15} {'Pruned':<15} {'Difference':<15} {'% Difference':<15}")
+
+    for stat in ['mean', 'median', 'variance', 'std_dev']:
+        original_value = original_stats[stat]
+        pruned_value = pruned_stats[stat]
+        difference = original_value - pruned_value
+        percent_diff = percentage_difference(original_value, pruned_value)
+
+        print(
+            f"{stat.capitalize():<20} {original_value:<15.3f} {pruned_value:<15.3f} {difference:<15.3f} {percent_diff:<10.2f}%")
+
+
+directories_original = os.listdir("out/l2")
+directories_pruned = os.listdir("prunedArcs/out/l2")
 
 # Process directories with 100 files each
 for i in range(len(directories_original)):
@@ -29,40 +64,62 @@ for i in range(len(directories_original)):
     pruned_best_obj = []
     directory = directories_original[i]
     # Get all txt files in the directory
-    print(directory)
-    files = os.listdir("out/" + directory)
+    files = os.listdir("out/l2/" + directory)
     for file in files:
+        if file in ["a180-3600_26.out", "a200-4000_35.out", "a220-4400_05.out", "a260-5200_25.out"]:
+            continue
         if file.endswith('.out'):
-            file_path = os.path.join("out/" + directory, file)
+            file_path = os.path.join("out/l2/" + directory, file)
             with open(file_path, 'r') as f:
                 lines = f.readlines()  # Read and strip the lines
                 objective_value_line = lines[len(lines) - 5]
                 total_run_time = lines[len(lines) - 1]
-                original_best_obj.append(float(objective_value_line[11:len(objective_value_line) - 1]))
+                #try:
+                value = float(objective_value_line[11:len(objective_value_line) - 1])
+                original_best_obj.append(value)
                 original_total_time.append(float(total_run_time[18:len(total_run_time) - 1]))
-
-    original_best_obj = original_best_obj[0:20]
-    original_total_time = original_total_time[0:20]
+                #except ValueError:
+                #    print("Invalid original file: " + file)
+                #    invalid_options.append(file)
 
     directory = directories_pruned[i]
-    files = os.listdir("prunedArcs/out/" + directory)
+    files = os.listdir("prunedArcs/out/l2/" + directory)
     for file in files:
+        if file in ["a240-4800_10.out", "a260-5200_04.out"]:
+            continue
         if file.endswith('.out'):
-            file_path = os.path.join("prunedArcs/out/" + directory, file)
+            file_path = os.path.join("prunedArcs/out/l2/" + directory, file)
             with open(file_path, 'r') as f:
                 lines = f.readlines()  # Read and strip the lines
                 objective_value_line = lines[len(lines) - 5]
                 total_run_time = lines[len(lines) - 1]
-                pruned_best_obj.append(float(objective_value_line[11:len(objective_value_line) - 1]))
+                #try:
+                value = float(objective_value_line[11:len(objective_value_line) - 1])
+                pruned_best_obj.append(value)
                 pruned_total_time.append(float(total_run_time[18:len(total_run_time) - 1]))
+                #except ValueError:
+                #    print("Invalid pruned instance file: " + file)
+                #    invalid_options.append(file)
 
     # Calculate statistics
+    """ 
     calculate_statistics(original_best_obj, "Original Best Obj")
     calculate_statistics(pruned_best_obj, "Pruned Best Obj")
     calculate_statistics(original_total_time, "Original Total Time")
-    calculate_statistics(pruned_total_time, "Pruned Total Time")
+    calculate_statistics(pruned_total_time, "Pruned Total Time")"""
+    compare_statistics(original_best_obj, pruned_best_obj, "Original Best Obj", "Pruned Best Obj", directory)
+    compare_statistics(original_total_time, pruned_total_time, "Original Total Time", "Pruned Total Time", directory)
+    """
+    boxcox_original_total_time, lambda_ = stats.boxcox(np.array(original_total_time))
+    print(f"Optimal λ: {lambda_}")
+    boxcox_pruned_total_time, lambda_ = stats.boxcox(np.array(pruned_total_time))
+    print(f"Optimal λ: {lambda_}")
+    """
+    log_original_total_time = np.log(np.array(original_total_time))/np.log(10)
+    log_pruned_total_time = np.log(np.array(pruned_total_time))/np.log(10)
 
     # Visualization for individual distributions
+
     plt.figure(figsize=(14, 7))
 
     # Histogram for objective values
@@ -76,8 +133,8 @@ for i in range(len(directories_original)):
 
     # Histogram for total time
     plt.subplot(2, 2, 2)
-    sns.histplot(original_total_time, color='green', kde=True, label='Original Total Time')
-    sns.histplot(pruned_total_time, color='purple', kde=True, label='Pruned Total Time')
+    sns.histplot(log_original_total_time, color='green', kde=True, label='Original Total Time', bins=50)
+    sns.histplot(log_pruned_total_time, color='purple', kde=True, label='Pruned Total Time', bins=50)
     plt.legend()
     plt.title('Distribution of Original Total Time and Pruned Total Time')
     plt.xlabel('Value')
@@ -94,7 +151,7 @@ for i in range(len(directories_original)):
 
     # Boxplot for total time
     plt.subplot(2, 2, 4)
-    plt.boxplot([original_total_time, pruned_total_time], tick_labels=['Original Total Time', 'Pruned Total Time'],
+    plt.boxplot([log_original_total_time, log_pruned_total_time], tick_labels=['Original Total Time', 'Pruned Total Time'],
                 patch_artist=True,
                 boxprops=dict(facecolor='lightgreen', color='green'),
                 medianprops=dict(color='purple'))
@@ -137,9 +194,10 @@ for i in range(len(directories_original)):
     # Show combined scatter plots
     plt.tight_layout()
     plt.show()
-
+    """
     # Print correlation coefficients and linear fit details
     print(
         f"Linear fit for (Original Total Time, Original Best Obj): y = {intercept1:.2f} + {slope1:.2f}x, Correlation coefficient: {r_value1:.3f}")
     print(
         f"Linear fit for (Pruned Total Time, Pruned Best Obj): y = {intercept2:.2f} + {slope2:.2f}x, Correlation coefficient: {r_value2:.3f}")
+   """

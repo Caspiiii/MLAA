@@ -188,7 +188,73 @@ def calculateDistanceArray(vertices):
 
 def calculateNeighborhoodArray(vertices, distances):
     sorted_indices = np.argsort(distances, axis=1)
-    #print(sorted_indices)
-    #print(np.array(vertices))
     return vertices[sorted_indices]
 
+"""
+    Extract the vertice coordinates of all routes of the given solution an stores it in
+    an n x m array with n being the number of vertices and m being the number of routes. 
+    
+    :parameter file path to solution has to be a .sol file containg the routes
+    :parameter file path to instance has to hold the necessary data for the coordinates of the vertices
+"""
+def extract_route_vertice_coordinates(solution, instance):
+    solution_file = read_solution(solution)
+    instance_file = read_instance(instance)
+    vertices = instance_file["vertices"]
+    vertices_np = np.array(vertices)
+    routes_vertices = []
+    for route in solution_file:
+        #Adapted list. vertice indices start with 1 but array acces starts with 0
+        adapted_route = [x - 1 for x in route]
+        route_vertices = vertices_np[adapted_route]
+        routes_vertices.append(route_vertices)
+    return routes_vertices
+
+
+"""
+    Extracts the date in the instance given at instance_path. 
+"""
+def read_instance(instance_path):
+    with open(instance_path, 'r') as file:
+        contents = file.readlines()
+        nodes = contents[1:len(contents) - 13]
+    instance = {"vertices": extract_vertices(nodes),
+                "starting_points": extract_startingPoints(contents)}
+    return instance
+
+
+"""
+    Extracts a list of routes from a .sol file given in solution_path. 
+"""
+def read_solution(solution_path):
+    routes_indices = []
+    with open(solution_path, 'r') as file:
+        contents = file.readlines()
+        routes = contents[1:len(contents) - 1]
+    for route in routes:
+        verticeIndices = extract_route(route)
+        routes_indices.append(verticeIndices)
+    return routes_indices
+
+"""
+    Returns a python list with each element holding 4 values: the first two are the coordinates, 
+    the third and fourth are earliest and latest possible service times. 
+"""
+def extract_route_vertice_coordinates_and_time_windows(solution, instance, filename):
+    solution_file = read_solution(solution)
+    instance_file = read_instance(instance)
+    vertices = instance_file["vertices"]
+    time_windows = extract_timeWindow(filename)
+    vertices_np = np.array(vertices)
+    time_windows_np = np.array(time_windows)
+    routes_vertices = []
+    for route in solution_file:
+        # Adapted list. vertice indices start with 1 but array acces starts with 0
+        adapted_route = [x - 1 for x in route]
+        route_vertices = np.zeros((len(adapted_route), 4))
+        hello = route_vertices[:, 2:4]
+        test = time_windows_np[adapted_route]
+        route_vertices[:, 0:2] = vertices_np[adapted_route]
+        route_vertices[:, 2:4] = time_windows_np[adapted_route]
+        routes_vertices.append(route_vertices)
+    return routes_vertices

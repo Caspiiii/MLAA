@@ -446,12 +446,15 @@ def predict_top_percent_svm(svm_model, v, st, des, ch, time, infeasible):
     average_time_differences = np.add(
         np.subtract(earliest_repeated_time_windows, np.transpose(earliest_repeated_time_windows)),
         np.subtract(latest_repeated_time_windows, np.transpose(latest_repeated_time_windows))) * 1 / 2
-    features = np.transpose(np.vstack((np.array(distances).flatten(), average_time_differences.flatten())))
-    features = features[infeasible_arcs == 0]
+    features2 = np.transpose(np.vstack((np.array(distances).flatten(), average_time_differences.flatten())))
+    features = features2[infeasible_arcs == 0]
     scaler = StandardScaler()
     scaled_features = scaler.fit_transform(features)
+    #scaled_features_test = scaler.fit_transform(features2)
     print("scaled the values")
     standard_edge_predicitions = svm_model.predict(scaled_features)
+    #test_predictions = svm_model.predict(scaled_features_test)
+    #test_sum = np.sum(test_predictions)
     print("made the predictions")
     print("scaled the predictions")
     # Set Charging stations, starting points and destination points edges to 1 and add them
@@ -493,7 +496,7 @@ def predict_top_percent_svm(svm_model, v, st, des, ch, time, infeasible):
         length_predictions += length_predictions_this_iteration
         predictions_single_node = predictions[i, :]
         random_edges = random.sample(range(0, length_predictions_this_iteration),
-                                     math.floor(length_predictions_this_iteration * 0.8))
+                                     math.floor(length_predictions_this_iteration * 0.5))
         standard_edge_predicitions[length_before:length_predictions][random_edges] = 1
         predictions_single_node[infeasible_arcs[i * n:(i + 1) * n] == 0] = standard_edge_predicitions[length_before:
                                                                                                       length_predictions]

@@ -5,6 +5,17 @@ import seaborn as sns
 from scipy.stats import linregress
 from scipy import stats
 
+########################################################################################################################
+##
+##                    -- Testing --
+## This file is for testing and comparing the results of the pruned and original
+## instances of the LNS .
+##
+########################################################################################################################startingPoints = np.array([])
+
+
+
+
 # Initialize arrays to store lines from files
 original_best_obj = []
 pruned_best_obj = []
@@ -15,6 +26,13 @@ invalid_options = ["a180-3600_26.out", "a200-4000_35.out", "a220-4400_05.out",
 
 
 def calculate_statistics(array, name):
+    """
+    Calculates mean, median, variance and standard deviation for the given list and
+    also returns it as a dictionary with the namen given
+    :param array: list to calculate statistics
+    :param name: name to add to the calculated statistics
+    :return: the calculated statistics
+    """
     mean = np.mean(array)
     median = np.median(array)
     variance = np.var(array)
@@ -29,13 +47,29 @@ def calculate_statistics(array, name):
 
 
 def percentage_difference(original_value, pruned_value):
+    """
+    Calculated the percentage difference between the two given values.
+    :param original_value: first value to compare
+    :param pruned_value: second value to compare
+    :return: the percentage difference
+    """
     if original_value != 0:
         return ((original_value - pruned_value) / original_value) * 100
     return 0  # Avoid division by zero
 
 
 def compare_statistics(original, pruned, original_name, pruned_name, instance_name):
-    # Calculate statistics for original and pruned lists
+    """
+    This takes 2 lists, calculates statistics for each of them, compares those statistics
+    both in absolut and percentage terms and prints the results with the given names.
+
+    :param original: first list to calculate statistics for
+    :param pruned: second list to calculate statistics for
+    :param original_name: the name that should be set for the statistic results of the first list original
+    :param pruned_name: the name that should be set for the statistic results of the second list pruned
+    :param instance_name: the main title of the printed table
+    :return: nothing is returned. The results are only printed.
+    """
     original_stats = calculate_statistics(original, original_name)
     pruned_stats = calculate_statistics(pruned, pruned_name)
 
@@ -49,8 +83,8 @@ def compare_statistics(original, pruned, original_name, pruned_name, instance_na
         difference = original_value - pruned_value
         percent_diff = percentage_difference(original_value, pruned_value)
 
-        print(
-            f"{stat.capitalize():<20} {original_value:<15.3f} {pruned_value:<15.3f} {difference:<15.3f} {percent_diff:<10.2f}%")
+        print(f"{stat.capitalize():<20} {original_value:<15.3f} {pruned_value:<15.3f}"
+              f" {difference:<15.3f} {percent_diff:<10.2f}%")
 
 
 directories_original = os.listdir("out/l2")
@@ -102,11 +136,6 @@ for i in range(len(directories_original)):
                 #    invalid_options.append(file)
 
     # Calculate statistics
-    """ 
-    calculate_statistics(original_best_obj, "Original Best Obj")
-    calculate_statistics(pruned_best_obj, "Pruned Best Obj")
-    calculate_statistics(original_total_time, "Original Total Time")
-    calculate_statistics(pruned_total_time, "Pruned Total Time")"""
     compare_statistics(original_best_obj, pruned_best_obj, "Original Best Obj", "Pruned Best Obj", directory)
     compare_statistics(original_total_time, pruned_total_time, "Original Total Time", "Pruned Total Time", directory)
     """

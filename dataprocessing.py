@@ -4,6 +4,16 @@ import os
 import math
 import matplotlib.pyplot as plt
 
+
+########################################################################################################################
+##
+##                      -- DATA Processing --
+##  Extract and Prepares the data necessary for training of the ML models. This includes
+##  calculating both labels and feature vectors.
+##
+########################################################################################################################
+
+
 def create_input(path):
     ## Creation of input vector
     directory_path = path
@@ -52,7 +62,7 @@ def create_input(path):
             startingPointsCenter = util.calculate_centroid(startingPoints)
             destinationPoints = util.extract_endingPoints(contents)
             destinationPointsCenter = util.calculate_centroid(destinationPoints)
-            chargingStationPoints = util.extract_ChargingStations(contents)
+            chargingStationPoints = util.extract_charging_stations(contents)
             # iterate over each edge
             for i in range(len(vertices)):
                 sortedNeighbourhood = calculate_neighbourhood(vertices[i], vertices)

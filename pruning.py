@@ -1,17 +1,23 @@
 import math
 import random
-
 import numpy as np
 import os
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 from itertools import product
-
 import util
 from sklearn.svm import SVR
 
-vertices = np.array([])
-startingPoints = np.array([])
+########################################################################################################################
+##
+##                    -- PRUNING --
+##  Prune possible arcs based on the used SVM/SVR. Calculate the Features necessary for
+##  the prediction.
+##
+########################################################################################################################startingPoints = np.array([])
+
+
+
 destinationPoints = np.array([])
 chargingStationPoints = np.array([])
 timeWindows = np.array([])
@@ -44,6 +50,8 @@ def is_connected(graph):
 
 
 def feature_extractor(i, j):
+    """Extract the features for the given edge. For this to work the necessary lists distances,
+    vertices, startingPoints, destinationPoints, chargingStationPoints etc. have to be already set"""
     dataPoint = []
     # Edge length
     #edge_length = np.linalg.norm(np.array(vertices[i]) - np.array(vertices[j]))
@@ -88,62 +96,9 @@ def feature_extractor(i, j):
 
     return dataPoint
 
-
-"""
-
-def feature_extractor(v):
-    i = int(v[0])
-    j = int(v[1])
-    dataPoint = []
-    # Edge length
-    #edge_length = np.linalg.norm(np.array(vertices[i]) - np.array(vertices[j]))
-    edge_length = distances[i, j]
-    dataPoint.append(edge_length if edge_length != 0 else 100)
-    # TODO Do this once as well: Try to calculate an array of lists each containing the sorted neighbourhood for the
-    #  given node. Same for nearness. Do it once.
-    dataPoint.append(np.where(neighborhoods[i, :] == vertices[j])[0][0])
-
-
-    # Distance from start and end points
-    #edgeCenter = util.calculate_centroid([vertices[i], vertices[j]])
-    #minimumStartingPoint = util.findSmallestDistance(startingPoints, edgeCenter)
-    #maximumStartingPoint = util.findBiggestDistance(startingPoints, edgeCenter)
-    #minimumDestinationPoint = util.findSmallestDistance(destinationPoints, edgeCenter)
-    #maximumDestinationPoint = util.findBiggestDistance(destinationPoints, edgeCenter)
-    #dataPoint.append(math.dist(startingPointsCenter, edgeCenter))
-    ##dataPoint.append(math.dist(max(startingPoints, key=lambda item: abs(item[0] + item[1])), edgeCenter))
-    #dataPoint.append(math.dist(min(startingPoints, key=lambda item: abs(item[0] + item[1])), edgeCenter))
-    #dataPoint.append(math.dist(minimumStartingPoint, edgeCenter))
-    #dataPoint.append(math.dist(maximumStartingPoint, edgeCenter))
-
-    # distance from end
-    # same principle as for start
-    #dataPoint.append(math.dist(destinationPointsCenter, edgeCenter))
-    #dataPoint.append(math.dist(min(destinationPoints, key=lambda item: abs(item[0] + item[1])), edgeCenter))
-    #dataPoint.append(math.dist(max(destinationPoints, key=lambda item: abs(item[0] + item[1])), edgeCenter))
-    #dataPoint.append(math.dist(minimumDestinationPoint, edgeCenter))
-    #dataPoint.append(math.dist(maximumDestinationPoint, edgeCenter))
-    # Clusterness (not that much of a positive effect but omitted due to performance reasons)
-    # Charging station edge
-    #dataPoint.append(vertices[i] in chargingStationPoints)
-    #dataPoint.append(vertices[j] in chargingStationPoints)
-    #dataPoint.append(vertices[i] in chargingStationPoints and vertices[j] in chargingStationPoints)
-
-    # Time windows
-    tw_i = timeWindows[i]
-    tw_j = timeWindows[j]
-    dataPoint.append(((tw_i[1] - tw_j[1]) + (tw_i[0] - tw_j[0])) / 2)
-    dataPoint.append(tw_i[1] - tw_j[1])
-    dataPoint.append(tw_i[0] - tw_j[0])
-    dataPoint.append(tw_i[1] - tw_j[0])
-
-    return dataPoint
-"""
-
-
 def process_directory_and_predict_svr(svr_model, directory_path, l_percent):
     """
-    Processes each file in the directory, extracts features, and calls predict_top_l_percent.
+    Processes each file in the directory, extracts features, and calls predict_top_percent_svr.
 
     Parameters:
     - svr_model: Trained SVR model
@@ -166,7 +121,7 @@ def process_directory_and_predict_svr(svr_model, directory_path, l_percent):
             timeWindows = util.extract_timeWindow(filename)
             startingPoints = util.extract_startingPoints(contents)
             destinationPoints = util.extract_endingPoints(contents)
-            chargingStationPoints = util.extract_ChargingStations(contents)
+            chargingStationPoints = util.extract_charging_stations(contents)
             infeasible_arcs = util.extract_infeasible_arcs(filename)
 
             output_array = predict_top_percent_svr(svr_model, l_percent,
@@ -187,7 +142,6 @@ def process_directory_and_predict_svr(svr_model, directory_path, l_percent):
             plt.savefig('degree_svr_' + filename[:-4] + '.png')
             plt.show()
 
-            output_file_path = os.path.join("prunedArcs/" + "svr/" + str(l_percent) + "/", f"{filename}")
             if not is_connected(output_array):
                 output_array = "failed"
             output_file_path = os.path.join("prunedArcs/", f"{filename}")
@@ -204,9 +158,13 @@ def predict_top_percent_svr(svr_model, percent, v, st, des,
 
     Parameters:
     - svr_model: Trained SVR model
-    - input_array: n x n numpy array for which to make predictions
-    - feature_extractor: Function that takes an entry (i, j) and returns a feature vector
-    - l_percent: Percentage of top entries to mark as 1 (0 < l_percent <= 100)
+    - percent: Percentage of top entries to mark as 1 (0 < l_percent <= 100)
+    - v: vertices (coordinates) of each vertice of the instance
+    - st: origin depots (coordinates) of the instance
+    - des: destination depots (coordinates) of the instance
+    - ch: charging stations (coordinates) of the instance
+    - time: time windows (earliest and latest service time) of each vertice of the instance
+    - infeas: n x n array containing already infeasible arcs (based on deterministic preprocessing)
 
     Returns:
     - output_array: n x n numpy array with 1s and 0s based on top l% predictions
@@ -230,8 +188,8 @@ def predict_top_percent_svr(svr_model, percent, v, st, des,
     timeWindows = time
     startingPointsCenter = util.calculate_centroid(startingPoints)
     destinationPointsCenter = util.calculate_centroid(destinationPoints)
-    distances = util.calculateDistanceArray(vertices)
-    neighborhoods = util.calculateNeighborhoodArray(np.array(vertices), distances)
+    distances = util.calculate_distance_array(vertices)
+    neighborhoods = util.calculate_neighborhood_array(np.array(vertices), distances)
     infeasible_arcs = infeas
     features = []
     # First calculate the feature vectors and scale them
@@ -260,9 +218,6 @@ def predict_top_percent_svr(svr_model, percent, v, st, des,
     features = np.transpose(np.vstack((np.array(distances).flatten(), average_time_differences.flatten())))
     print(features)
     print(features.shape)
-    #with open("latest.txt", 'w') as output_file:
-    #    np.savetxt(output_file, features, fmt='%d')
-
     """
     for i in range(n):
         print("Calculated features for one vertice!", i)
@@ -338,7 +293,7 @@ def predict_top_percent_svr(svr_model, percent, v, st, des,
     output_array = (predictions >= threshold_value).astype(int)
     """
 
-    mst = util.calculateMinimumSpanningTree()
+    mst = util.calculate_minimum_spanning_tree()
     for edge in mst.edges():
         u, v = edge
         predictions[u, v] = 1
@@ -352,7 +307,7 @@ def predict_top_percent_svr(svr_model, percent, v, st, des,
 
 def process_directory_and_predict_svm(svm_model, directory_path):
     """
-    Processes each file in the directory, extracts features, and calls predict_top_l_percent.
+    Processes each file in the directory, extracts features, and calls predict_top_percent_svm.
 
     Parameters:
     - svm_model: Trained SVM model
@@ -374,7 +329,7 @@ def process_directory_and_predict_svm(svm_model, directory_path):
             infeasible_arcs = util.extract_infeasible_arcs(filename)
             startingPoints = util.extract_startingPoints(contents)
             destinationPoints = util.extract_endingPoints(contents)
-            chargingStationPoints = util.extract_ChargingStations(contents)
+            chargingStationPoints = util.extract_charging_stations(contents)
             n = len(vertices)
 
             output_array = predict_top_percent_svm(svm_model,
@@ -401,19 +356,22 @@ def process_directory_and_predict_svm(svm_model, directory_path):
 
 def predict_top_percent_svm(svm_model, v, st, des, ch, time, infeasible):
     """
-    Predicts values for an n x n array using an SVM model and marks the top l% as 1 and the rest as 0.
+      Predicts for each edge if it should be pruned using the svm_model.
+      Additionally, it takes a percentage of edges given in the code and ensures
+      that they are not pruned as well. This helps with feasibility for smaller instances.
 
-    Parameters:
-    - svm_model: Trained SVM model
-    - v: Vertices
-    - st: Starting points
-    - des: Destination points
-    - ch: Charging station points
-    - time: Time windows
+      Parameters:
+      - svr_model: Trained SVM model
+      - v: vertices (coordinates) of each vertice of the instance
+      - st: origin depots (coordinates) of the instance
+      - des: destination depots (coordinates) of the instance
+      - ch: charging stations (coordinates) of the instance
+      - time: time windows (earliest and latest service time) of each vertice of the instance
+      - infeasible: n x n array containing already infeasible arcs (based on deterministic preprocessing)
 
-    Returns:
-    - output_array: n x n numpy array with 1s and 0s based on top l% predictions
-    """
+      Returns:
+      - output_array: n x n numpy array with 1s and 0s based on predictions.
+      """
     n = len(v)
     predictions = np.ones((n, n))
 
@@ -435,8 +393,9 @@ def predict_top_percent_svm(svm_model, v, st, des, ch, time, infeasible):
     timeWindows = time
     startingPointsCenter = util.calculate_centroid(startingPoints)
     destinationPointsCenter = util.calculate_centroid(destinationPoints)
-    distances = util.calculateDistanceArray(vertices)
-    neighborhoods = util.calculateNeighborhoodArray(np.array(vertices), distances)
+    distances = util.calculate_distance_array(vertices)
+    neighborhoods = util.calculate_neighborhood_array(np.array(vertices), distances)
+    test = neighborhoods
     infeasible_arcs = infeasible
 
     earliest_time_windows = [t[0] for t in timeWindows]
@@ -446,15 +405,12 @@ def predict_top_percent_svm(svm_model, v, st, des, ch, time, infeasible):
     average_time_differences = np.add(
         np.subtract(earliest_repeated_time_windows, np.transpose(earliest_repeated_time_windows)),
         np.subtract(latest_repeated_time_windows, np.transpose(latest_repeated_time_windows))) * 1 / 2
-    features2 = np.transpose(np.vstack((np.array(distances).flatten(), average_time_differences.flatten())))
-    features = features2[infeasible_arcs == 0]
+    features = np.transpose(np.vstack((np.array(distances).flatten(), average_time_differences.flatten())))
+    features = features[infeasible_arcs == 0]
     scaler = StandardScaler()
     scaled_features = scaler.fit_transform(features)
-    #scaled_features_test = scaler.fit_transform(features2)
     print("scaled the values")
     standard_edge_predicitions = svm_model.predict(scaled_features)
-    #test_predictions = svm_model.predict(scaled_features_test)
-    #test_sum = np.sum(test_predictions)
     print("made the predictions")
     print("scaled the predictions")
     # Set Charging stations, starting points and destination points edges to 1 and add them

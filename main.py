@@ -11,156 +11,23 @@ import joblib
 import dataprocessing as dp
 import matplotlib.pyplot as plt
 import pruning
-import pickle
 import json
+
+########################################################################################################################
+##
+##                      -- MAIN FILE --
+##  Entry point for executing training and prediction based pruning with SVM/SVR.
+##
+########################################################################################################################
+
 
 ## Deal with data being heavily inbalanced (a lot more negative)
 def sparsify(input, size):
+    """Sparsify the input down to the size given in size"""
     num_to_select = size
     selected_elements = np.random.choice(input, num_to_select, replace=False)
     return selected_elements
 
-
-
-
-#print(acc)
-#for i in range(len(predictions)):
-#print(classes[predictions[i]])
-"""
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-
-model = svm.SVC()
-model.fit(X_train, y_train)
-
-predictions = model.predict(X_test)
-acc = accuracy_score(y_test, predictions)
-inputVector = dp.create_input('b1/')
-##Training
-X = []
-#yNp = np.array(inputVector).flatten()
-y = []
-
-for j in range(len(inputVector)):
-    y = y + inputVector[j][17::18]
-
-for i in range(len(inputVector)):
-    dataPoint = []
-    for j in range(len(inputVector[i])):
-        if (j + 1) % 18 != 0:
-            dataPoint.append(inputVector[i][j])
-        if ((j + 1) % 18 == 0):
-            X.append(dataPoint)
-            dataPoint = []
-            
-            
-yNp = np.array(y)
-XNp = np.array(X)
-yPositive = yNp[y]
-xPositive = XNp[y]
-print(yNp)
-print("-----" * 40)
-print(XNp)
-print("-----" * 40)
-print(yPositive)
-print(len(yPositive))
-print("-----" * 40)
-print(xPositive)
-print(len(xPositive))
-print("-----" * 40)
-
-
-yNpNegative = yNp[yNp != True]
-xNpNegative = XNp[yNp != True]
-
-yNegative = sparsify(yNpNegative, len(xPositive))
-xNegative = xNpNegative[np.random.choice(xNpNegative.shape[0], len(xPositive), replace=False)]
-print(yNegative)
-print(len(yNegative))
-print("-----" * 40)
-print(xNegative)
-print(len(xNegative))
-print("-----" * 40)
-
-X = np.vstack((xNegative, xPositive))
-y = np.hstack((yNegative, yPositive))
-print("-----" * 40)
-print("PLOTS")
-x = np.arange(len(X[:,0]))
-colors = ['red' if truth else 'blue' for truth in y]
-print("-----" * 40)
-print("Edgelength")
-plt.scatter(x, X[:,0], c=colors)
-plt.show()
-print("-----" * 40)
-print("Neighbourhood")
-plt.scatter(x, X[:,1], c=colors)
-plt.show()
-print("-----" * 40)
-print("Distance to starting point")
-plt.scatter(x, X[:,2], c=colors)
-plt.show()
-plt.scatter(x, X[:,3], c=colors)
-plt.show()
-plt.scatter(x, X[:,4], c=colors)
-plt.show()
-plt.scatter(x, X[:,5], c=colors)
-plt.show()
-plt.scatter(x, X[:,6], c=colors)
-plt.show()
-print("-----" * 40)
-print("Distance to destination point")
-plt.scatter(x, X[:,7], c=colors)
-plt.show()
-plt.scatter(x, X[:,8], c=colors)
-plt.show()
-plt.scatter(x, X[:,9], c=colors)
-plt.show()
-plt.scatter(x, X[:,10], c=colors)
-plt.show()
-plt.scatter(x, X[:,11], c=colors)
-plt.show()
-print("-----" * 40)
-print("Clusterness")
-plt.scatter(x, X[:,12], c=colors)
-plt.show()
-plt.scatter(x, X[:,13], c=colors)
-plt.show()
-print("-----" * 40)
-print("Charging station edge")
-plt.scatter(x, X[:,14], c=colors)
-plt.show()
-plt.scatter(x, X[:,15], c=colors)
-plt.show()
-plt.scatter(x, X[:,16], c=colors)
-plt.show()
-print("-----" * 40)
-#print("Alpha-nearness")
-#plt.scatter(x, X[:,17], c=colors)
-#plt.show()
-#plt.scatter(x, X[:,18], c=colors)
-#plt.show()
-#plt.scatter(x, X[:,19], c=colors)
-#plt.show()
-print("-----" * 40)
-print(X)
-print(len(X))
-print("-----" * 40)
-print(y)
-print(len(y))
-print("-----" * 40)
-
-"""
-"""
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-
-model = svm.SVC()
-model.fit(X_train, y_train)
-
-predictions = model.predict(X_test)
-print(sum(predictions))
-acc = accuracy_score(y_test, predictions)
-print("accuracy:", acc)
-"""
 
 ###############################################################################################################################################################################################################
 ##          Regression
@@ -257,7 +124,7 @@ print(f"Mean Squared Error: {mse:.3f}")
 print(f"R^2 Score: {r2:.3f}")
 
 # Save the model to a file
-joblib_file = "svr_model_one_time_metric.pkl"
+joblib_file = "models/svr_model_one_time_metric.pkl"
 joblib.dump(best_svr, joblib_file)
 
 # Scatter plot of actual vs predicted values
@@ -290,7 +157,7 @@ print("## Classification")
 print("################################################################################################################################################################################################################################")
 
 
-
+"""
 inputVector = dp.create_input('l1/')
 length = len(inputVector[0])
 
@@ -411,7 +278,7 @@ model_params = {
 with open('linear_svc_params.json', 'w') as f:
     json.dump(model_params, f)
 
-joblib_file = "svm_only_linear_one_time_metric.pkl"
+joblib_file = "models/svm_only_linear_one_time_metric.pkl"
 joblib.dump(best_svm, joblib_file)
 
 
@@ -453,7 +320,7 @@ for i, txt in enumerate(thresholds):
 plt.show()
 
 
-joblib_file = "svm_model_one_time_metric.pkl"
+joblib_file = "models/svm_model_one_time_metric.pkl"
 joblib.dump(best_svm, joblib_file)
 
 # Scatter plot of actual vs predicted values for features
@@ -467,13 +334,19 @@ for i in range(length-1):
     plt.show()
     
 
-
+"""
 ###############################################################################################################################################################################################################
 ##          Pruning
 ###############################################################################################################################################################################################################
+print("################################################################################################################################################################################################################################")
+print("## Pruning")
+print("################################################################################################################################################################################################################################")
 
 
-#loaded_model = joblib.load("svr_model_one_time_metric.pkl")
+
+
+
+#loaded_model = joblib.load("models/svr_model_one_time_metric.pkl")
 """
 inputVector = dp.create_input('l1/')
 
@@ -522,5 +395,5 @@ print(y_pred)
 
 
 
-loaded_model = joblib.load("svm_only_linear_one_time_metric.pkl")
+loaded_model = joblib.load("models/svm_only_linear_one_time_metric.pkl")
 pruning.process_directory_and_predict_svm(loaded_model, "l1/")

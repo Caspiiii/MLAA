@@ -1,0 +1,58 @@
+EADARP version c9cc1-dirty
+ARGS: ["--mh_ttime=900", "--mh_lfreq=1", "--only_single_s_visits=0", "--gamma=0.7", "--mh_checkit=true", "--ifile=EADARP/instances/l2/a220-4400.txt", "--odir=EADARP/out/l2-s0-g0.7", "--oname=a220-4400_39"]
+Settings:
+--alns_gamma=0.025
+--alns_segment_size=100
+--alns_sigma1=10
+--alns_sigma2=9
+--alns_sigma3=3
+--at_most_one_s=false
+--gamma=0.7
+--ifile=EADARP/instances/l2/a220-4400.txt
+--infeasible_arcs=EADARP/infeasible_arcs
+--insert_charging_otf=true
+--insert_cost_noise=0.014
+--lns_init_temp_factor=0.0
+--lns_temp_dec_factor=0.99
+--log_all_sols_fname=
+--mh_checkit=true
+--mh_lfreq=1
+--mh_lnewinc=true
+--mh_tciter=-1
+--mh_tctime=-1.0
+--mh_titer=30000
+--mh_tobj=-1.0
+--mh_ttime=900.0
+--odir=EADARP/out/l2-s0-g0.7
+--oname=a220-4400_39
+--only_single_s_visits=false
+--repair_max_routes=0
+--route_based_ops=0
+--seed=1158963204
+--tightened_windows=EADARP/tightened_windows
+--use_milp_in_otf=0
+--xcheck_isfeasible=false
+
+EADARPInstance(EADARP/instances/l2/a220-4400.txt, n=4400, n_K=220, S=[9243, 9244, 9245], Q=14.85, n_F=220, γ=0.7, T_plan=1200.0)
+
+T preprocessing time [s]: 18.73989
+I       iter             best          obj_old          obj_new        time              method info
+I          1      42590.63868     104400.00000      42590.63868   3113.8290                 con 
+
+Method statistics
+S  method    iter  succ  succ-rate%  tot-obj-gain  avg-obj-gain  rel-succ%  net-time  net-time%  brut-time  brut-time%
+S  con          1     1   100.00000  -61809.36132  -61809.36132  100.000003111.84940   99.93642 3111.84940    99.93642
+S  drrr_15      0     0         NaN       0.00000           NaN    0.00000   0.00000    0.00000    0.00000     0.00000
+S  rrg          0     0         NaN       0.00000           NaN    0.00000   0.00000    0.00000    0.00000     0.00000
+S  rroi         0     0         NaN       0.00000           NaN    0.00000   0.00000    0.00000    0.00000     0.00000
+S  rrri         0     0         NaN       0.00000           NaN    0.00000   0.00000    0.00000    0.00000     0.00000
+S  SUM/AVG      1     1   100.00000  -61809.36132  -61809.36132   20.000003111.84940   99.93642 3111.84940    99.93642
+
+T best solution: EADARPSolution(t_routing=48109.819, t_excess=26033.096, obj_val=42590.639, obj_val_valid=true,
+    unserved_requests=Int64[])
+
+T best obj: 42590.63868227773
+T best iteration: 1
+T total iterations: 1
+T best time [s]: 3111.850
+T total time [s]: 3113.8291

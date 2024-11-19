@@ -1,0 +1,90 @@
+EADARP version c9cc1-dirty
+ARGS: ["--mh_ttime=900", "--mh_lfreq=1", "--only_single_s_visits=0", "--gamma=0.7", "--mh_checkit=true", "--ifile=EADARP/instances/l2/a220-4400.txt", "--odir=EADARP/out/l2-s0-g0.7", "--oname=a220-4400_01"]
+Settings:
+--alns_gamma=0.025
+--alns_segment_size=100
+--alns_sigma1=10
+--alns_sigma2=9
+--alns_sigma3=3
+--at_most_one_s=false
+--gamma=0.7
+--ifile=EADARP/instances/l2/a220-4400.txt
+--infeasible_arcs=EADARP/infeasible_arcs
+--insert_charging_otf=true
+--insert_cost_noise=0.014
+--lns_init_temp_factor=0.0
+--lns_temp_dec_factor=0.99
+--log_all_sols_fname=
+--mh_checkit=true
+--mh_lfreq=1
+--mh_lnewinc=true
+--mh_tciter=-1
+--mh_tctime=-1.0
+--mh_titer=30000
+--mh_tobj=-1.0
+--mh_ttime=900.0
+--odir=EADARP/out/l2-s0-g0.7
+--oname=a220-4400_01
+--only_single_s_visits=false
+--repair_max_routes=0
+--route_based_ops=0
+--seed=1067150598
+--tightened_windows=EADARP/tightened_windows
+--use_milp_in_otf=0
+--xcheck_isfeasible=false
+
+EADARPInstance(EADARP/instances/l2/a220-4400.txt, n=4400, n_K=220, S=[9243, 9244, 9245], Q=14.85, n_F=220, γ=0.7, T_plan=1200.0)
+
+T preprocessing time [s]: 20.90524
+I       iter             best          obj_old          obj_new        time              method info
+I          1      42457.70436     104400.00000      42457.70436    675.5575                 con 
+I          2      42433.23800      42457.70436      42433.23800    679.5056         drrr_15+rrg 
+I          3      42394.82987      42433.23800      42394.82987    682.2555         drrr_15+rrg 
+I          4      42370.61104      42394.82987      42370.61104    685.4425        drrr_15+rrri 
+I          5      42356.05879      42370.61104      42356.05879    688.8168        drrr_15+rrri 
+I          6      42332.42742      42356.05879      42332.42742    691.5326        drrr_15+rroi 
+I          7      42315.72557      42332.42742      42315.72557    694.5940        drrr_15+rrri 
+I          8      42315.72557      42315.72557      42320.24283    697.6412        drrr_15+rroi 
+I          9      42309.63255      42315.72557      42309.63255    702.0099        drrr_15+rroi 
+I         10      42295.21698      42309.63255      42295.21698    705.5267         drrr_15+rrg 
+I         11      42284.64915      42295.21698      42284.64915    708.6216        drrr_15+rroi 
+I         12      42267.42398      42284.64915      42267.42398    712.5122         drrr_15+rrg 
+I         13      42267.42398      42267.42398      42269.08572    715.8624        drrr_15+rroi 
+I         14      42234.92715      42267.42398      42234.92715    719.2417        drrr_15+rroi 
+I         15      42221.25475      42234.92715      42221.25475    722.4944        drrr_15+rrri 
+I         16      42196.41239      42221.25475      42196.41239    725.2483         drrr_15+rrg 
+┌ Warning: Route ([8858, 2582, 6982, 2982, 887, 1792, 7382, 5287, 6192, 155, 2597, 4290, 4555, 6997, 3646, 8690, 660, 8046, 5060, 1277, 5677, 2560, 2987, 7387, 6960, 1563, 471, 502, 5963, 4871, 4902, 3611, 8011, 3011, 3060, 7460, 7411, 159, 306, 4559, 1849, 4706, 6249, 1990, 6390, 231, 4631, 2475, 2732, 1936, 6875, 7132, 6336, 2266, 6666, 4086, 1629, 199, 8486, 6029, 4599, 679, 5079, 4167, 8567, 592, 1035, 5435, 4992, 1868, 6268, 2892, 349, 7292, 4749, 9078], Float64[], Int64[]) is infeasible after removing requests [1529, 475, 1287, 1968, 3892, 1207, 1471, 1820, 3742, 2686, 3210, 270, 749, 1438, 2830].
+└ @ Main.EADARP ~/EADARP/DynamicVR/EADARP/src/EADARPSolutions.jl:551
+ERROR: MethodError: no method matching remove_routes!(::EADARPSolution, ::Vector{Route})
+
+Closest candidates are:
+  remove_routes!(::EADARPSolution, !Matched::Vector{Int64})
+   @ Main.EADARP ~/EADARP/DynamicVR/EADARP/src/EADARPSolutions.jl:570
+
+Stacktrace:
+  [1] remove_requests!(sol::EADARPSolution, requests::Vector{Int64})
+    @ Main.EADARP ~/EADARP/DynamicVR/EADARP/src/EADARPSolutions.jl:553
+  [2] destroy_requests_random_removal!(sol::EADARPSolution, par::Int64, ::MHLib.Schedulers.Result)
+    @ Main.EADARP ~/EADARP/DynamicVR/EADARP/src/LNS.jl:197
+  [3] perform_method_pair!(scheduler::MHLib.Schedulers.Scheduler{EADARPSolution}, destroy::MHLib.Schedulers.MHMethod, repair::MHLib.Schedulers.MHMethod, sol::EADARPSolution)
+    @ MHLib.Schedulers ~/.julia/packages/MHLib/d3WBY/src/Schedulers.jl:450
+  [4] lns_iteration!(lns::MHLib.LNSs.LNS{MHLib.LNSs.UniformRandomMethodSelector, EADARPSolution}, destroy_idx::Nothing, repair_idx::Nothing)
+    @ MHLib.LNSs ~/.julia/packages/MHLib/d3WBY/src/LNSs.jl:234
+  [5] lns_iteration!
+    @ ~/.julia/packages/MHLib/d3WBY/src/LNSs.jl:231 [inlined]
+  [6] lns!(lns::MHLib.LNSs.LNS{MHLib.LNSs.UniformRandomMethodSelector, EADARPSolution}, sol::EADARPSolution)
+    @ MHLib.LNSs ~/.julia/packages/MHLib/d3WBY/src/LNSs.jl:255
+  [7] run!
+    @ ~/.julia/packages/MHLib/d3WBY/src/LNSs.jl:275 [inlined]
+  [8] run_lns!(sol::EADARPSolution; kwargs::@Kwargs{})
+    @ Main.EADARP ~/EADARP/DynamicVR/EADARP/src/LNS.jl:151
+  [9] run_lns!
+    @ ~/EADARP/DynamicVR/EADARP/src/LNS.jl:23 [inlined]
+ [10] lns(args::Vector{String}; kwargs::@Kwargs{})
+    @ Main.EADARP ~/EADARP/DynamicVR/EADARP/src/EADARP.jl:209
+ [11] lns
+    @ ~/EADARP/DynamicVR/EADARP/src/EADARP.jl:163 [inlined]
+ [12] run_for_instances(; dir::String, postfix::String, odir::String, pattern::String)
+    @ Main.EADARP ~/EADARP/DynamicVR/EADARP/src/EADARP.jl:297
+ [13] top-level scope
+    @ none:1

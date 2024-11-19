@@ -118,7 +118,7 @@ def process_directory_and_predict_svr(svr_model, directory_path, l_percent):
 
             # Assuming util functions for extracting necessary data
             vertices = util.extract_vertices(nodes)
-            timeWindows = util.extract_timeWindow(filename)
+            timeWindows = util.extract_timeWindow("tightenedWindows" + filename)
             startingPoints = util.extract_startingPoints(contents)
             destinationPoints = util.extract_endingPoints(contents)
             chargingStationPoints = util.extract_charging_stations(contents)
@@ -325,7 +325,7 @@ def process_directory_and_predict_svm(svm_model, directory_path):
                 nodes = contents[1:len(contents) - 13]
 
             vertices = util.extract_vertices(nodes)
-            timeWindows = util.extract_timeWindow(filename)
+            timeWindows = util.extract_timeWindow("tightenedWindows/" + filename)
             infeasible_arcs = util.extract_infeasible_arcs(filename)
             startingPoints = util.extract_startingPoints(contents)
             destinationPoints = util.extract_endingPoints(contents)
@@ -395,7 +395,6 @@ def predict_top_percent_svm(svm_model, v, st, des, ch, time, infeasible):
     destinationPointsCenter = util.calculate_centroid(destinationPoints)
     distances = util.calculate_distance_array(vertices)
     neighborhoods = util.calculate_neighborhood_array(np.array(vertices), distances)
-    test = neighborhoods
     infeasible_arcs = infeasible
 
     earliest_time_windows = [t[0] for t in timeWindows]
@@ -443,7 +442,7 @@ def predict_top_percent_svm(svm_model, v, st, des, ch, time, infeasible):
     # the counter stores the current position in the predictions. Because only necessary
     # predictions are made this differs from the indices of the resulting predictions array
     # which should hold prediction for every edge including the infeasible ones.
-
+    """
     length_predictions = 0
     length_before = 0
 
@@ -459,7 +458,6 @@ def predict_top_percent_svm(svm_model, v, st, des, ch, time, infeasible):
         predictions[i, :] = predictions_single_node
         length_before += length_predictions_this_iteration
     print("after assignment of predicitions")
-    """
     mst = util.calculateMinimumSpanningTree()
     for edge in mst.edges():
         u, v = edge
@@ -468,7 +466,7 @@ def predict_top_percent_svm(svm_model, v, st, des, ch, time, infeasible):
     if not is_connected(predictions):
         predictions = "failed"
     """
-    return predictions
+    return standard_edge_predicitions
 
 
 def predict_random(percent, v, st, des,

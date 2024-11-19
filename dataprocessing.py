@@ -57,7 +57,7 @@ def create_input(path):
 
             # extract necessary data
             vertices = util.extract_vertices(nodes)
-            timeWindows = util.extract_timeWindow(filename)
+            timeWindows = util.extract_timeWindow("tightenedWindows/" + filename)
             startingPoints = util.extract_startingPoints(contents)
             startingPointsCenter = util.calculate_centroid(startingPoints)
             destinationPoints = util.extract_endingPoints(contents)
@@ -67,13 +67,13 @@ def create_input(path):
             for i in range(len(vertices)):
                 sortedNeighbourhood = calculate_neighbourhood(vertices[i], vertices)
                 for j in range(len(vertices)):
-                    if infeasibleEdges[i][j] == 'true':
-                        continue
-                    dataPoint = []
-                    if vertices[i] in startingPoints or vertices[i] in destinationPoints or vertices[i] in chargingStationPoints:
-                        continue
-                    if vertices[j] in startingPoints or vertices[j] in destinationPoints or vertices[j] in chargingStationPoints:
-                        continue
+                    #if infeasibleEdges[i][j] == 'true':
+                    #    continue
+                    #dataPoint = []
+                    #if vertices[i] in startingPoints or vertices[i] in destinationPoints or vertices[i] in chargingStationPoints:
+                    #    continue
+                    #if vertices[j] in startingPoints or vertices[j] in destinationPoints or vertices[j] in chargingStationPoints:
+                    #    continue
                     print("Calculating Edge Length")
                     print("-----" * 40)
                     if i != j:
@@ -92,27 +92,25 @@ def create_input(path):
                         # For the edge we look at the center of the edge
                         print("Calculating Distance from Start")
                         print("-----" * 40)
-                        """
                         edgeCenter = util.calculate_centroid([vertices[i], vertices[j]])
-                        minimumStartingPoint = util.findSmallestDistance(startingPoints, edgeCenter)
-                        maximumStartingPoint = util.findBiggestDistance(startingPoints, edgeCenter)
-                        minimumDestinationPoint = util.findSmallestDistance(destinationPoints, edgeCenter)
-                        maximumDestinationPoint = util.findBiggestDistance(destinationPoints, edgeCenter)
-                        dataPoint.append(math.dist(startingPointsCenter, edgeCenter))
-                        dataPoint.append(math.dist(max(startingPoints, key=lambda item: abs(item[0] + item[1])), edgeCenter))
-                        dataPoint.append(math.dist(min(startingPoints, key=lambda item: abs(item[0] + item[1])), edgeCenter))
-                        dataPoint.append(math.dist(minimumStartingPoint, edgeCenter))
-                        dataPoint.append(math.dist(maximumStartingPoint, edgeCenter))
+                        minimumStartingPoint = util.find_smallest_distance(startingPoints, edgeCenter)
+                        maximumStartingPoint = util.find_biggest_distance(startingPoints, edgeCenter)
+                        minimumDestinationPoint = util.find_smallest_distance(destinationPoints, edgeCenter)
+                        maximumDestinationPoint = util.find_biggest_distance(destinationPoints, edgeCenter)
+                        #dataPoint.append(math.dist(startingPointsCenter, edgeCenter))
+                        #dataPoint.append(math.dist(max(startingPoints, key=lambda item: abs(item[0] + item[1])), edgeCenter))
+                        #dataPoint.append(math.dist(min(startingPoints, key=lambda item: abs(item[0] + item[1])), edgeCenter))
+                        #dataPoint.append(math.dist(minimumStartingPoint, edgeCenter))
+                        #dataPoint.append(math.dist(maximumStartingPoint, edgeCenter))
                         # distance from end
                         # same principle as for start
                         print("Calculating Distance To End")
                         print("-----" * 40)
-                        dataPoint.append(math.dist(destinationPointsCenter, edgeCenter))
-                        dataPoint.append(math.dist(min(destinationPoints, key=lambda item: abs(item[0] + item[1])), edgeCenter))
-                        dataPoint.append(math.dist(max(destinationPoints, key=lambda item: abs(item[0] + item[1])), edgeCenter))
-                        dataPoint.append(math.dist(minimumDestinationPoint, edgeCenter))
-                        dataPoint.append(math.dist(maximumDestinationPoint, edgeCenter))
-                        """
+                        #dataPoint.append(math.dist(destinationPointsCenter, edgeCenter))
+                        #dataPoint.append(math.dist(min(destinationPoints, key=lambda item: abs(item[0] + item[1])), edgeCenter))
+                        #dataPoint.append(math.dist(max(destinationPoints, key=lambda item: abs(item[0] + item[1])), edgeCenter))
+                        #dataPoint.append(math.dist(minimumDestinationPoint, edgeCenter))
+                        #dataPoint.append(math.dist(maximumDestinationPoint, edgeCenter))
                         print("Calculating Clusterness")
                         print("-----" * 40)
                         # density

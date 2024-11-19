@@ -9,6 +9,7 @@ import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 import math
+from scipy.spatial.distance import cdist
 
 ########################################################################################################################
 ##
@@ -140,7 +141,7 @@ def pca_analysis():
         Execute PCA Analysis based on currently 4 features: The first two are the location coordinates.
         The third and fourth are the earliest and latest possible service time.
     """
-    directories_path = "out/"
+    directories_path = "../out/"
     directories = os.listdir(directories_path)[3:]
 
     for directory in directories:
@@ -150,11 +151,11 @@ def pca_analysis():
         #plt.ylabel('Principal Component 2')
         files_path = os.path.join(directories_path, directory)
         files = os.listdir(files_path)
-        instance = "l1/" + directory + ".txt"
+        instance = "../l1/" + directory + ".txt"
         for filename in files:
             if filename.endswith("sol"):
                 file_path = os.path.join(files_path, filename)
-                routes_vertices = util.extract_route_vertice_coordinates_and_time_windows(file_path, instance,
+                routes_vertices = anu.extract_route_vertice_coordinates_and_time_windows(file_path, instance,
                                                                                           directory + ".txt")
                 cmap = mpl.colormaps['Set3']
                 colors = cmap(np.linspace(0, 1, len(routes_vertices)))
@@ -245,6 +246,66 @@ def route_distribution_with_annotations():
                 break
 
 
+def route_distribution_time_windows():
+    """
+    For each route over all solutions plot the time windows of each pickup- and drop-off location.
+    """
+    directories_path = "../out/l2/"
+    directories = os.listdir(directories_path)
+    for directory in directories:
+        files_path = os.path.join(directories_path, directory)
+        files = os.listdir(files_path)
+        instance_path = "../l2/" + directory + ".txt"
+        for filename in files:
+            if filename.endswith("sol"):
+                solution_path = os.path.join(files_path, filename)
+                routes_vertices = anu.extract_route_vertice_coordinates_and_time_windows(solution_path, instance_path, directory + ".txt")
+                num_plots = len(routes_vertices)
+                fig, axs = plt.subplots(num_plots, 1, figsize=(20, num_plots * 3), constrained_layout=True)
+                for idx, vertices in enumerate(routes_vertices):
+                    ax = axs[idx]
+                    earliest_times = vertices[:, 2]
+                    latest_times = vertices[:, 3]
+                    for i, (start, end) in enumerate(zip(earliest_times, latest_times)):
+                        ax.barh(i, end - start, left=start, height=0.4, color='skyblue', edgecolor='black')
+                    ax.set_yticks(np.arange(len(vertices)))
+                    ax.set_yticklabels([f"Location {i + 1}" for i in range(len(vertices))], fontsize=6)
+                    ax.set_xlabel('Time', fontsize=10)
+                    ax.set_title(f'Execution Time Overlap for Route {idx + 1}', fontsize=12)
+                    ax.tick_params(axis='x', labelsize=8)
+                fig.suptitle(f"Instance {directory}", fontsize=16)
+                plt.show()
+                break
+
+
+def evaluate_routes_with_scaling(solution_path, instance_path, time_windows_path):
+    """
+    Evaluate the distance-based heuristic using scaled coordinates and time windows.
+    """
+    differences = []  # List to store the differences between predicted and actual insertion points
+    routes_vertices = anu.extract_route_vertice_coordinates_and_time_windows(solution_path, instance_path,
+                                                                             time_windows_path)
+    routes_indices = util.read_solution(solution_path)
+    n_requests = util.instance_size(instance_path)["n_P"]
+    for i in range(len(routes_vertices)):
+        route = routes_vertices[i]
+        route_indices = routes_indices[i]
+        n = len(route)
+        for j in range(n):
+            if (route_indices[j] > 2 * n_requests):
+                continue
+            remaining_route = np.delete(route, j, axis=0)
+            vertex_to_insert = route[j]
+            predicted_insertion_point = anu.calculate_insertion_point_with_scaling(remaining_route, vertex_to_insert)
+            actual_insertion_point = j
+            difference = abs(predicted_insertion_point - actual_insertion_point)
+            differences.append(difference)
+            print(
+                f"Vertex {j}: Predicted: {predicted_insertion_point}, Actual: {actual_insertion_point}, Difference: {difference}")
+    print(f"Average differences over all routes: {np.mean(differences)}")
+
 #route_distribution()
 #pca_analysis()
-route_distribution_with_annotations()
+#route_distribution_with_annotations()
+#route_distribution_time_windows()
+anu.execute_evaluation_all_files_sol(evaluate_routes_with_scaling)

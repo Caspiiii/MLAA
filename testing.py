@@ -5,6 +5,8 @@ import seaborn as sns
 from scipy.stats import linregress
 from scipy import stats
 
+import util
+
 ########################################################################################################################
 ##
 ##                    -- Testing --
@@ -22,8 +24,8 @@ pruned_best_obj = []
 original_total_time = []
 pruned_total_time = []
 invalid_options = ["a180-3600_26.out", "a200-4000_35.out", "a220-4400_05.out",
-                   "a240-4800_10.out", "a260-5200_25.out", "a260-5200_04.out"]
-
+                   "a260-5200_25.out"]
+# "a240-4800_10.out, a260-5200_04.out"
 
 def calculate_statistics(array, name):
     """
@@ -87,8 +89,8 @@ def compare_statistics(original, pruned, original_name, pruned_name, instance_na
               f" {difference:<15.3f} {percent_diff:<10.2f}%")
 
 
-directories_original = os.listdir("out/l2")
-directories_pruned = os.listdir("prunedArcs/out/l2")
+directories_original = ["a5-60", "a6-48", "a6-60", "a6-72", "a7-56", "a7-70", "a7-84", "a8-64", "a8-80", "a8-96"]
+directories_pruned = directories_original
 
 # Process directories with 100 files each
 for i in range(len(directories_original)):
@@ -98,43 +100,31 @@ for i in range(len(directories_original)):
     pruned_best_obj = []
     directory = directories_original[i]
     # Get all txt files in the directory
-    files = os.listdir("out/l2/" + directory)
+    files_path = "C:/Users/caspi/Documents/TU_Wien/Bachelorarbeit/Data/classic/09_11/" + directory + "/1.250/"
+    files = os.listdir(files_path)
     for file in files:
-        if file in ["a180-3600_26.out", "a200-4000_35.out", "a220-4400_05.out", "a260-5200_25.out"]:
-            continue
+        #if file in ["a180-3600_26.out", "a200-4000_35.out", "a220-4400_05.out", "a260-5200_25.out"]:
+        #    continue
         if file.endswith('.out'):
-            file_path = os.path.join("out/l2/" + directory, file)
+            file_path = os.path.join(files_path, file)
             with open(file_path, 'r') as f:
-                lines = f.readlines()  # Read and strip the lines
-                objective_value_line = lines[len(lines) - 5]
-                total_run_time = lines[len(lines) - 1]
-                #try:
-                value = float(objective_value_line[11:len(objective_value_line) - 1])
-                original_best_obj.append(value)
-                original_total_time.append(float(total_run_time[18:len(total_run_time) - 1]))
-                #except ValueError:
-                #    print("Invalid original file: " + file)
-                #    invalid_options.append(file)
-
+                obj_value = util.extract_objectiveFun(f)
+                if obj_value > 0 and obj_value < 100000:
+                    original_best_obj.append(obj_value)
+                    f.seek(0)
+                    original_total_time.append(util.extract_run_time(f))
     directory = directories_pruned[i]
-    files = os.listdir("prunedArcs/out/l2/" + directory)
+    files_path = "C:/Users/caspi/Documents/TU_Wien/Bachelorarbeit/Data/svm/custom_weightings_nystroem_inv/09_11/" + directory + "/0.500"
+    files = os.listdir(files_path)
     for file in files:
-        if file in ["a240-4800_10.out", "a260-5200_04.out"]:
-            continue
+        #if file in ["a240-4800_10.out", "a260-5200_04.out"]:
+        #    continue
         if file.endswith('.out'):
-            file_path = os.path.join("prunedArcs/out/l2/" + directory, file)
+            file_path = os.path.join(files_path, file)
             with open(file_path, 'r') as f:
-                lines = f.readlines()  # Read and strip the lines
-                objective_value_line = lines[len(lines) - 5]
-                total_run_time = lines[len(lines) - 1]
-                #try:
-                value = float(objective_value_line[11:len(objective_value_line) - 1])
-                pruned_best_obj.append(value)
-                pruned_total_time.append(float(total_run_time[18:len(total_run_time) - 1]))
-                #except ValueError:
-                #    print("Invalid pruned instance file: " + file)
-                #    invalid_options.append(file)
-
+                pruned_best_obj.append(util.extract_objectiveFun(f))
+                f.seek(0)
+                pruned_total_time.append(util.extract_run_time(f))
     # Calculate statistics
     compare_statistics(original_best_obj, pruned_best_obj, "Original Best Obj", "Pruned Best Obj", directory)
     compare_statistics(original_total_time, pruned_total_time, "Original Total Time", "Pruned Total Time", directory)
@@ -144,8 +134,8 @@ for i in range(len(directories_original)):
     boxcox_pruned_total_time, lambda_ = stats.boxcox(np.array(pruned_total_time))
     print(f"Optimal λ: {lambda_}")
     """
-    log_original_total_time = np.log(np.array(original_total_time))/np.log(10)
-    log_pruned_total_time = np.log(np.array(pruned_total_time))/np.log(10)
+    #log_original_total_time = np.log(np.array(original_total_time))/np.log(10)
+    #log_pruned_total_time = np.log(np.array(pruned_total_time))/np.log(10)
 
     # Visualization for individual distributions
 
@@ -159,11 +149,10 @@ for i in range(len(directories_original)):
     plt.title('Distribution of Original Best Obj and Pruned Best Obj')
     plt.xlabel('Value')
     plt.ylabel('Frequency')
-
     # Histogram for total time
     plt.subplot(2, 2, 2)
-    sns.histplot(log_original_total_time, color='green', kde=True, label='Original Total Time', bins=50)
-    sns.histplot(log_pruned_total_time, color='purple', kde=True, label='Pruned Total Time', bins=50)
+    sns.histplot(original_total_time, color='green', kde=True, label='Original Total Time', bins=50)
+    sns.histplot(pruned_total_time, color='purple', kde=True, label='Pruned Total Time', bins=50)
     plt.legend()
     plt.title('Distribution of Original Total Time and Pruned Total Time')
     plt.xlabel('Value')
@@ -177,16 +166,14 @@ for i in range(len(directories_original)):
                 medianprops=dict(color='red'))
     plt.title('Boxplot Comparison for Original Best Obj and Pruned Best Obj')
     plt.ylabel('Value')
-
     # Boxplot for total time
     plt.subplot(2, 2, 4)
-    plt.boxplot([log_original_total_time, log_pruned_total_time], tick_labels=['Original Total Time', 'Pruned Total Time'],
+    plt.boxplot([original_total_time, pruned_total_time], tick_labels=['Original Total Time', 'Pruned Total Time'],
                 patch_artist=True,
                 boxprops=dict(facecolor='lightgreen', color='green'),
                 medianprops=dict(color='purple'))
     plt.title('Boxplot Comparison for Original Total Time and Pruned Total Time')
     plt.ylabel('Value')
-
     # Show individual distribution plots
     plt.suptitle('Instance ' + directory, fontsize=16)
     plt.tight_layout()
@@ -195,7 +182,6 @@ for i in range(len(directories_original)):
 
     # Combined analysis of (original total time, original best obj) and (pruned total time, pruned best obj)
     plt.figure(figsize=(14, 7))
-
     # Scatter plot for (original total time, original best obj)
     plt.subplot(1, 2, 1)
     plt.scatter(original_total_time, original_best_obj, color='blue', label='(Original Total Time, Original Best Obj)')

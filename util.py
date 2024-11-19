@@ -97,6 +97,18 @@ def extract_objectiveFun(solution):
         return -1
     return float(objectiveFunction[0].split()[3])
 
+def extract_run_time(solution):
+    """
+    Extracts the total run time value of the given solution. This is based on the
+    .out file, not the .sol file. The file reading has to be done beforehand.
+    :param solution: The LNS solution as a list of strings
+    :return: The total run time value as a float or -1 if there was an error
+    """
+    total_run_time = find_lines_with_substring(solution, "T total time")
+    if (len(total_run_time) != 1):
+        return -1
+    return float(total_run_time[0].split()[4])
+
 
 def extract_vertices(instance):
     """
@@ -125,7 +137,7 @@ def extract_timeWindow(instance_path):
     :return: The extracted tightened time windows as a list of tuples.
     """
     timeWindow = []
-    file_path_time_windows = os.path.join("tightenedWindows/", instance_path)
+    file_path_time_windows = os.path.join(instance_path)
     if os.path.isfile(file_path_time_windows):
         with open(file_path_time_windows, 'r') as file:
             for line in file:

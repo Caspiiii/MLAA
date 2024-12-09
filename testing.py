@@ -114,7 +114,7 @@ for i in range(len(directories_original)):
                     f.seek(0)
                     original_total_time.append(util.extract_run_time(f))
     directory = directories_pruned[i]
-    files_path = "C:/Users/caspi/Documents/TU_Wien/Bachelorarbeit/Data/svm/custom_weightings_nystroem_inv/09_11/" + directory + "/0.500"
+    files_path = "C:/Users/caspi/Documents/TU_Wien/Bachelorarbeit/Data/svm/custom_weightings_nystroem_inv/09_11/" + directory + "/0.375"
     files = os.listdir(files_path)
     for file in files:
         #if file in ["a240-4800_10.out", "a260-5200_04.out"]:

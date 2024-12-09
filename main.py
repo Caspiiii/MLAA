@@ -227,7 +227,7 @@ print(f"Accuracy: {accuracy:.2f}")
 """
 
 #Pipeline
-"""
+
 # Create the pipeline
 pipeline = Pipeline([
     ('nystroem', Nystroem()),  # Nystroem transformer
@@ -407,6 +407,7 @@ print("#########################################################################
 #loaded_model = joblib.load("models/svr_model_one_time_metric.pkl")
 #pruning.process_directory_and_predict_svr(loaded_model, "l1/", 80)
 #pruning.process_directory_and_predict_svr(loaded_model, "l2/", 80)
+"""
 
 
 

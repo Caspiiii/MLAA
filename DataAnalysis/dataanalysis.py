@@ -9,6 +9,7 @@ import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 import math
+import networkx as nx
 from scipy.spatial.distance import cdist
 
 ########################################################################################################################
@@ -250,12 +251,12 @@ def route_distribution_time_windows():
     """
     For each route over all solutions plot the time windows of each pickup- and drop-off location.
     """
-    directories_path = "../out/l2/"
+    directories_path = "../out/"
     directories = os.listdir(directories_path)
     for directory in directories:
         files_path = os.path.join(directories_path, directory)
         files = os.listdir(files_path)
-        instance_path = "../l2/" + directory + ".txt"
+        instance_path = "../l1/" + directory + ".txt"
         for filename in files:
             if filename.endswith("sol"):
                 solution_path = os.path.join(files_path, filename)
@@ -268,12 +269,13 @@ def route_distribution_time_windows():
                     latest_times = vertices[:, 3]
                     for i, (start, end) in enumerate(zip(earliest_times, latest_times)):
                         ax.barh(i, end - start, left=start, height=0.4, color='skyblue', edgecolor='black')
-                    ax.set_yticks(np.arange(len(vertices)))
-                    ax.set_yticklabels([f"Location {i + 1}" for i in range(len(vertices))], fontsize=6)
-                    ax.set_xlabel('Time', fontsize=10)
-                    ax.set_title(f'Execution Time Overlap for Route {idx + 1}', fontsize=12)
+                    #ax.set_yticks(np.arange(len(vertices)))
+                    ax.set_ylabel('Locations', fontsize=16)
+                    #ax.set_yticklabels([f"Location {i + 1}" for i in range(len(vertices))], fontsize=6)
+                    ax.set_xlabel('Time', fontsize=16)
+                    ax.set_title(f'Execution Time Overlap for Route {idx + 1}', fontsize=16)
                     ax.tick_params(axis='x', labelsize=8)
-                fig.suptitle(f"Instance {directory}", fontsize=16)
+                fig.suptitle(f"Instance {directory}", fontsize=20)
                 plt.show()
                 break
 
@@ -304,8 +306,48 @@ def evaluate_routes_with_scaling(solution_path, instance_path, time_windows_path
                 f"Vertex {j}: Predicted: {predicted_insertion_point}, Actual: {actual_insertion_point}, Difference: {difference}")
     print(f"Average differences over all routes: {np.mean(differences)}")
 
+
+def draw_example_graph(nodes):
+    G = nx.DiGraph()
+    G.add_nodes_from(range(len(nodes)))
+    G.add_edges_from((i, j) for i in range(len(nodes)) for j in range(len(nodes)) if i != j)
+    node_colors = []
+    labels = {}
+    for i, (name, color) in enumerate(nodes):
+        node_colors.append(color)
+        labels[i] = name
+    pos = nx.spring_layout(G, center=(0, 0), k=0.1, scale=3.0)
+    #forcing first node in center
+    plt.figure(figsize=(10, 8))
+    nx.draw(
+        G,
+        pos,
+        with_labels=True,
+        node_color=node_colors,
+        labels=labels,
+        node_size=2000,
+        font_color="black",
+        font_size=16,
+        font_weight="bold",
+        edge_color="gray",
+        width=1.5,
+        connectionstyle="arc3,rad=0.05"
+    )
+    plt.title("Complete Graph with Charging Station Centered", fontsize=14)
+    plt.show()
+
 #route_distribution()
 #pca_analysis()
 #route_distribution_with_annotations()
 #route_distribution_time_windows()
-anu.execute_evaluation_all_files_sol(evaluate_routes_with_scaling)
+#anu.execute_evaluation_all_files_sol(evaluate_routes_with_scaling)
+nodes = [
+        ("Charging Station", "#8fc78f"),
+        ("PickUp 1", "#add8e6"),
+        ("PickUp 2", "#add8e6"),
+        ("Origin Depot", "#fbbd8b"),
+        ("DropOff 1", "#add8e6"),
+        ("DropOff 2", "#add8e6"),
+        ("Destination Depot", "#fbbd8b")
+    ]
+draw_example_graph(nodes)

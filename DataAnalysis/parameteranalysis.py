@@ -94,7 +94,7 @@ def means_significance_analysis(groups, parameters):
 
 def execute_svm_analysis():
     # First iterate over all thresholds
-    directories_path = "C:/Users/caspi/Documents/TU_Wien/Bachelorarbeit/Data/classic/09_11/helper/"
+    directories_path = "C:/Users/caspi/Documents/TU_Wien/Bachelorarbeit/Data/svm/custom_weightings_nystroem_inv/09_11"
     directories = os.listdir(directories_path)
     for directory in directories:
         # Then per threshold over all instances

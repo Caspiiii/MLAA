@@ -3,9 +3,14 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 from scipy import stats
+import seaborn as sns
+from statsmodels.stats.multitest import multipletests
+from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C
+from sklearn.preprocessing import MinMaxScaler
 
 import util
-
+import analysisutil as anautil
 
 ########################################################################################################################
 ##
@@ -61,15 +66,16 @@ def svm_parameter_analysis(parameter_values, objective_values, name):
     plt.tight_layout()
     plt.savefig('obj_value_by_parameter_' + name + '_2.png', dpi=600)  # Save plot with desired filename and dpi
     plt.show()
-    means_significance_analysis(groups, means.index)
+    means_significance_analysis(groups, means.index, name)
 
-def means_significance_analysis(groups, parameters):
+def means_significance_analysis(groups, parameters, name):
     """
     Tests if the differences of mean are overall statistically significant via one way ANOVA and also tests
     the statistical significance of the differences of each mean to every other mean.
     :param groups: A python list of the grouped objective function values.
     :param parameters: The names of the parameters corresponding to each mean. That is the mean has been calculated
      for each parameter.
+    :param name: The name of the instance.
     :return: Prints the results of both tests.
     """
     # one way ANOVA to test if the means actually differ significantly (not really necessary tbh,
@@ -91,10 +97,41 @@ def means_significance_analysis(groups, parameters):
             value = f"{p_values[i][j]:.2f}"
             row.append(value)
         print(f"{row_param:<10} | " + " | ".join(f"{value:<8}" for value in row))
+    n = len(parameters)
+    p_values = np.full((n, n), np.nan)  # Initialize a matrix of p-values
+    for i in range(n):
+        for j in range(n):
+            if i != j:
+                # Perform a paired Wilcoxon signed-rank test between the two groups
+                # Note: Ensure that groups[i] and groups[j] are of the same length and represent paired data.
+                stat, p = stats.wilcoxon(groups[i], groups[j])
+                p_values[i, j] = p
+    header = [" " * 1] + parameters.astype(str)
+    print("********** |", " | ".join(header))
+    print("-" * (10 + 7 * n))
+    for i, row_param in enumerate(parameters):
+        row = [f"{p_values[i][j]:.2f}" for j in range(n)]
+        print(f"{row_param:<10} | " + " | ".join(f"{val:<8}" for val in row))
+    plt.figure(figsize=(10, 8))
+    ax = sns.heatmap(
+        p_values,
+        annot=False,
+        fmt=".2e",  # Scientific notation for small p-values
+        xticklabels=parameters,
+        yticklabels=parameters,
+        cmap="coolwarm",
+        cbar_kws={'label': 'p-value'},
+        linewidths=0.5
+    )
+    ax.set_title("Pairwise Wilcoxon Signed-Rank Test p-values")
+    plt.xticks(rotation=45, ha="right")
+    plt.tight_layout()
+    plt.savefig(f'heatmap_willcoxon_{name}', dpi=300)
+    plt.show()
 
 def execute_svm_analysis():
     # First iterate over all thresholds
-    directories_path = "C:/Users/caspi/Documents/TU_Wien/Bachelorarbeit/Data/svm/custom_weightings_nystroem_inv/09_11"
+    directories_path = "/home/caspiiii/TU_Wien/Bachelor/data/custom_threshold_linear_inv/07_11"
     directories = os.listdir(directories_path)
     for directory in directories:
         # Then per threshold over all instances
@@ -123,5 +160,69 @@ def execute_svm_analysis():
         objective_values = list(sorted_list2)
         svm_parameter_analysis(parameter_values, objective_values, directory)
 
+def obj_value_development_plot():
+    """
+    Plots the development of the objective function over time for a given solution.
+    """
+    directories_path = "/home/caspiiii/TU_Wien/Bachelor/data/24h/"
+    #directories = os.listdir(directories_path)
+    #for directory in directories:
+    files = os.listdir(directories_path)
+    for file in files:
+        if file.endswith(".out"):
+            route_development_obj, route_development_times = anautil.extract_route_development(os.path.join(directories_path, file))
+            """
+            route_development_obj_pruned = []
+            route_development_times_pruned = []
+            directories_path_pruned = "/home/caspiiii/TU_Wien/Bachelor/data/24h/"
+            pruned_files = os.listdir(os.path.join(directories_path_pruned, directory))
+            for pruned_file in pruned_files:
+                if pruned_file.endswith(".out"):
+                    route_development_obj_pruned, route_development_times_pruned = anautil.extract_route_development(
+                        os.path.join(directories_path_pruned, directory, pruned_file))
+                    break
+            times_array_pruned = np.array(route_development_times_pruned)
+            obj_array_pruned = np.array(route_development_obj_pruned)
+            times_array = np.array(route_development_times)
+            obj_array = np.array(route_development_obj)
+            degree = 1
+            coeffs_pruned = np.polyfit(times_array_pruned[len(times_array_pruned) // 2:], obj_array_pruned[len(obj_array_pruned) // 2:], deg=degree)
+            poly_model_pruned = np.poly1d(coeffs_pruned)
+            future_times_pruned = np.arange(min(times_array_pruned), 1501, 10)
+            future_prediction_pruned = poly_model_pruned(future_times_pruned)
+            coeffs = np.polyfit(times_array, obj_array, deg=degree)
+            poly_model = np.poly1d(coeffs)
+            future_times = np.arange(min(times_array), 1501, 10)
+            future_prediction = poly_model(future_times)
+            """
+            plt.figure(figsize=(10, 6))
 
+            # Plot original objective values
+            plt.plot(route_development_times, route_development_obj, linewidth=1.5, color='lime',
+                     label='Original Objective Value')
+
+            # Plot pruned objective values
+            """
+            plt.plot(route_development_times_pruned, route_development_obj_pruned, linewidth=1.5, color='cyan',
+                     label='Pruned Objective Value')
+
+            # Plot the polynomial regression predictions
+            plt.plot(future_times, future_prediction, '-', label="forecast original values", color='crimson')
+            plt.plot(future_times_pruned, future_prediction_pruned, '-', label=f'forecast pruned values', color='salmon')
+            
+            plt.ylim(min(min(route_development_obj_pruned), min(future_prediction_pruned)) - 2,
+                     max(max(future_prediction), max(route_development_obj_pruned)) + 2)
+            """
+            plt.grid(visible=True, linestyle='--', alpha=0.7)
+            plt.title('Objective Function Progression ' + file[:-7], fontsize=16, fontweight='bold')
+            plt.xlabel('Time', fontsize=14)
+            plt.ylabel('Objective Function Value', fontsize=14)
+            plt.legend(fontsize=12)
+            plt.xticks(fontsize=12)
+            plt.yticks(fontsize=12)
+            plt.savefig(f'obj_val_progression_24h_{file[:-7]}', dpi=300)
+            plt.show()
+
+
+#obj_value_development_plot()
 execute_svm_analysis()

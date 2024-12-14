@@ -393,9 +393,10 @@ def read_instance(instance_path):
 
 def read_solution(solution_path):
     """
+    ! FOR .SOL FILES !
     Reads file and extracts for each route each index of the vertices in the route in the solution (based on .sol file)
      given at solution_path.
-    :param solution_path: Path to the solution of interest
+    :param solution_path: Path to the .sol solution of interest
     :return: A list of routes containing all routes of the .sol file at solution_path
     """
     routes_indices = []

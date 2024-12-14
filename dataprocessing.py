@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 ########################################################################################################################
 
 
-def create_input(path):
+def create_input(path, tightened_windows_path, infeasible_arcs_path, solutions_path):
     ## Creation of input vector
     directory_path = path
     files = os.listdir(directory_path)
@@ -36,7 +36,7 @@ def create_input(path):
 
             # calculate the labels for the input
             solutionsName = filename[0:len(filename) - 4]
-            labels = create_labels_simple("out/" + solutionsName + "/", len(nodes))
+            labels = create_labels_simple(solutions_path + solutionsName + "/", len(nodes))
             #print(labels[0])
             #print(np.sum(labels))
             #print("-" * 80)
@@ -45,7 +45,7 @@ def create_input(path):
 
             #get infeasible arcs
             infeasibleEdges = []
-            file_path_infeasible = os.path.join("infeasibleArcs/", filename)
+            file_path_infeasible = os.path.join(infeasible_arcs_path, filename)
             if os.path.isfile(file_path_infeasible):
                 # Open the file
                 with open(file_path_infeasible, 'r') as file:
@@ -57,7 +57,7 @@ def create_input(path):
 
             # extract necessary data
             vertices = util.extract_vertices(nodes)
-            timeWindows = util.extract_timeWindow("tightenedWindows/" + filename)
+            timeWindows = util.extract_timeWindow(tightened_windows_path + filename)
             startingPoints = util.extract_startingPoints(contents)
             startingPointsCenter = util.calculate_centroid(startingPoints)
             destinationPoints = util.extract_endingPoints(contents)
@@ -69,19 +69,21 @@ def create_input(path):
                 for j in range(len(vertices)):
                     #if infeasibleEdges[i][j] == 'true':
                     #    continue
-                    #dataPoint = []
-                    #if vertices[i] in startingPoints or vertices[i] in destinationPoints or vertices[i] in chargingStationPoints:
-                    #    continue
-                    #if vertices[j] in startingPoints or vertices[j] in destinationPoints or vertices[j] in chargingStationPoints:
-                    #    continue
+                    dataPoint = []
+                    if vertices[i] in startingPoints or vertices[i] in destinationPoints or vertices[i] in chargingStationPoints:
+                        continue
+                    if vertices[j] in startingPoints or vertices[j] in destinationPoints or vertices[j] in chargingStationPoints:
+                        continue
                     print("Calculating Edge Length")
                     print("-----" * 40)
                     if i != j:
                         # edge length
-                        if (math.dist(vertices[i], vertices[j])) == 0:
-                            dataPoint.append(100)
-                        else:
-                            dataPoint.append(math.dist(vertices[i], vertices[j]))
+
+                        #if (math.dist(vertices[i], vertices[j])) == 0:
+                        #    dataPoint.append(100)
+                        #else:
+                            #dataPoint.append(math.dist(vertices[i], vertices[j]))
+
                         print("Calculating Nearness of Nodes")
                         print("-----" * 40)
                         # nearness of nodes
@@ -137,24 +139,25 @@ def create_input(path):
                         #timewindows
                         if (vertices[j] in chargingStationPoints or vertices[j] in startingPoints or vertices[j] in destinationPoints):
                             dataPoint.append(0)
-                            #dataPoint.append(0)
-                            #dataPoint.append(0)
-                            #dataPoint.append(0)
+                            dataPoint.append(0)
+                            dataPoint.append(0)
+                            dataPoint.append(0)
                             #plt.scatter(i, timeWindows[i][0] - timeWindows[j][0], color='black',
                              #           label='Single Point')
 
                         else:
                             dataPoint.append(
                                 ((timeWindows[i][1] - timeWindows[j][1]) + (timeWindows[i][0] - timeWindows[j][0])) / 2)
-                            #dataPoint.append(timeWindows[i][1] - timeWindows[j][1])
-                            #dataPoint.append(timeWindows[i][0] - timeWindows[j][0])
-                            #dataPoint.append(timeWindows[i][1] - timeWindows[j][0])
+                            dataPoint.append(timeWindows[i][1] - timeWindows[j][1])
+                            dataPoint.append(timeWindows[i][0] - timeWindows[j][0])
+                            dataPoint.append(timeWindows[i][1] - timeWindows[j][0])
                         #if (labels[i, j] == 1):
                             #plt.scatter(j, timeWindows[i][0] - timeWindows[j][0],color='red',
                             #        label='Single Point')
                         #else:
                             #plt.scatter(i, timeWindows[i][0] - timeWindows[j][0], color='grey',
                             #            label='Single Point')
+                            a = 1+1
                         dataPoint.append(labels[i, j])
                         inputEdges.append(dataPoint)
 
@@ -276,9 +279,6 @@ def create_labels_simple(path, length):
                         for i in range(len(verticeIndices)-1):
                             labels[verticeIndices[i]-1, verticeIndices[i+1]-1] = 1
                         #labels[verticeIndices[-1]-1, verticeIndices[0]-1] = 1
-                        for line in verticeIndices:
-                            txt_file.write(str(line) + ", ")
-                        txt_file.write("\n")
     return labels
 def calculate_neighbourhood(vertice, neighbourhood):
     v = vertice

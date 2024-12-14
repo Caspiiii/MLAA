@@ -35,6 +35,26 @@ def extract_route_vertice_coordinates(solution_path, instance_path):
         routes_vertices.append(route_vertices)
     return routes_vertices
 
+def extract_route_development(solution_path):
+    route_development_obj = []
+    route_development_times = []
+
+    shouldBeRead = False
+    with open(solution_path, 'r') as file:
+        contents = file.readlines()
+        for conent in contents:
+            if "\n" == conent and shouldBeRead:
+                shouldBeRead = False
+            if shouldBeRead:
+                obj_value = float(conent.split()[4])
+                time_value = float(conent.split()[5])
+                if (obj_value < 100000):
+                    route_development_times.append(time_value)
+                    route_development_obj.append(obj_value)
+            if "I       iter             best          obj_old          obj_new        time              method info" in conent:
+                shouldBeRead = True
+    return route_development_obj, route_development_times
+
 
 def extract_route_vertice_coordinates_and_time_windows(solution_path, instance_path, filename):
     """
@@ -116,9 +136,9 @@ def execute_evaluation_all_files_sol(function):
         instance_path = "../l1/" + directory + ".txt"
         first_sol_file = next((file for file in files if file.endswith('.sol')), None)
         if first_sol_file is not None:
-            print("\n##################################################################################################")
-            print(f"Execute function for {directory}")
-            print("##################################################################################################")
+            #print("\n##################################################################################################")
+            #print(f"Execute function for {directory}")
+            #print("##################################################################################################")
             solution_path = os.path.join(files_path, first_sol_file)
             time_windows_path = directory + ".txt"
             function(solution_path, instance_path, time_windows_path)

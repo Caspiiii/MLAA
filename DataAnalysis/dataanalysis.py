@@ -1,3 +1,5 @@
+import networkx as nx
+
 import util
 import analysisutil as anu
 import os
@@ -9,7 +11,6 @@ import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 import math
-import networkx as nx
 from scipy.spatial.distance import cdist
 
 ########################################################################################################################
@@ -26,12 +27,12 @@ def route_distribution():
        Plot all routes of each instance in the given directory in terms of their
        geographical coordinates.
     """
-    directories_path = "out/"
+    directories_path = "../out/"
     directories = os.listdir(directories_path)
     for directory in directories:
         files_path = os.path.join(directories_path, directory)
         files = os.listdir(files_path)
-        instance = "l1/" + directory + ".txt"
+        instance = "../l1/" + directory + ".txt"
         for filename in files:
             if filename.endswith("sol"):
                 plt.figure(figsize=(10, 10))
@@ -40,6 +41,7 @@ def route_distribution():
                 routes_vertices = anu.extract_route_vertice_coordinates(file_path, instance)
                 draw_furthest_quadrilateral(routes_vertices, instance)
                 plt.grid(True)
+                plt.savefig(f"{filename[:-4]}_locations_all_routes.png", dpi=300, bbox_inches='tight')  # Save the figure to a file
                 plt.show()
                 break
 
@@ -132,57 +134,51 @@ def pca_analysis_all_routes(routes_vertices):
         pca_df = pd.DataFrame(data=principal_components, columns=['PC1', 'PC2'])
         plt.scatter(pca_df['PC1'], pca_df['PC2'], s=10, color="black")
 
-        # Step 5: Explained Variance Ratio
-        explained_variance = pca.explained_variance_ratio_
-
-
 
 def pca_analysis():
     """
         Execute PCA Analysis based on currently 4 features: The first two are the location coordinates.
         The third and fourth are the earliest and latest possible service time.
     """
-    directories_path = "../out/"
-    directories = os.listdir(directories_path)[3:]
+    directories_path = "/home/caspiiii/TU_Wien/Bachelor/data/24h/"
+    #directories = os.listdir(directories_path)[3:]
 
-    for directory in directories:
-        plt.figure(figsize=(10, 10))
-        #
-        #plt.xlabel('Principal Component 1')
-        #plt.ylabel('Principal Component 2')
-        files_path = os.path.join(directories_path, directory)
-        files = os.listdir(files_path)
-        instance = "../l1/" + directory + ".txt"
-        for filename in files:
-            if filename.endswith("sol"):
-                file_path = os.path.join(files_path, filename)
-                routes_vertices = anu.extract_route_vertice_coordinates_and_time_windows(file_path, instance,
-                                                                                          directory + ".txt")
-                cmap = mpl.colormaps['Set3']
-                colors = cmap(np.linspace(0, 1, len(routes_vertices)))
-                scaler = StandardScaler()
-                for i, route_vertices in enumerate(routes_vertices):
-                    scaled_data = scaler.fit_transform(route_vertices)
+    #for directory in directories:
+    #
+    #plt.xlabel('Principal Component 1')
+    #plt.ylabel('Principal Component 2')
+    #files_path = os.path.join(directories_path, directory)
+    #files = os.listdir(files_path)
+    files = os.listdir(directories_path)
+    #instance = "../l1/" + directory + ".txt"
+    for filename in files:
+        if filename.endswith("sol"):
+            instance = "../l2/" + filename[:-7] + ".txt"
+            file_path = os.path.join(directories_path, filename)
+            routes_vertices = anu.extract_route_vertice_coordinates_and_time_windows(file_path, instance,
+                                                                                      filename[:-7] + ".txt")
+            cmap = mpl.colormaps['Set3']
+            colors = cmap(np.linspace(0, 1, len(routes_vertices)))
+            scaler = StandardScaler()
+            for i, route_vertices in enumerate(routes_vertices):
+                scaled_data = scaler.fit_transform(route_vertices)
+                plt.figure(figsize=(10, 10))
+                pca = PCA(n_components=2)  # Reduce to 2 dimensions (components)
+                principal_components = pca.fit_transform(scaled_data)
+                pca_df = pd.DataFrame(data=principal_components, columns=['PC1', 'PC2'])
+                # TODO: generalize
+                #plt.subplot(math.ceil(math.sqrt(len(routes_vertices))),
+                #            math.floor(math.sqrt(len(routes_vertices) + 2)), i + 1)
+                plt.title('PCA: ' + filename[:-7] + "; Route: " + str(i + 1))
+                pca_analysis_all_routes(routes_vertices)
+                plt.scatter(pca_df['PC1'], pca_df['PC2'], color=colors[i])
+                plt.grid(True)
+                explained_variance = pca.explained_variance_ratio_
+                print("Explained Variance Ratio:", explained_variance)
+                plt.tight_layout()
+                plt.savefig(f'pca_{filename[:-7]}_route{i}', dpi=300)
+                #plt.show()
 
-                    # Step 2: Perform PCA
-                    pca = PCA(n_components=2)  # Reduce to 2 dimensions (components)
-                    principal_components = pca.fit_transform(scaled_data)
-
-                    # Step 3: Create a DataFrame with the principal components
-                    pca_df = pd.DataFrame(data=principal_components, columns=['PC1', 'PC2'])
-                    # TODO: generalize
-                    plt.subplot(math.ceil(math.sqrt(len(routes_vertices))),
-                                math.floor(math.sqrt(len(routes_vertices) + 2)), i + 1)
-                    plt.title('PCA: ' + directory + "; Route: " + str(i + 1))
-                    pca_analysis_all_routes(routes_vertices)
-                    plt.scatter(pca_df['PC1'], pca_df['PC2'], color=colors[i])
-                    plt.grid(True)
-                    # Step 5: Explained Variance Ratio
-                    explained_variance = pca.explained_variance_ratio_
-                    print("Explained Variance Ratio:", explained_variance)
-                break
-        plt.tight_layout()
-        plt.show()
 
 
 def route_distribution_with_annotations():
@@ -251,6 +247,9 @@ def route_distribution_time_windows():
     """
     For each route over all solutions plot the time windows of each pickup- and drop-off location.
     """
+    directories_path = "/home/caspiiii/TU_Wien/Bachelor/data/24h/"
+    files = os.listdir(directories_path)
+    """        
     directories_path = "../out/"
     directories = os.listdir(directories_path)
     for directory in directories:
@@ -259,25 +258,31 @@ def route_distribution_time_windows():
         instance_path = "../l1/" + directory + ".txt"
         for filename in files:
             if filename.endswith("sol"):
-                solution_path = os.path.join(files_path, filename)
-                routes_vertices = anu.extract_route_vertice_coordinates_and_time_windows(solution_path, instance_path, directory + ".txt")
-                num_plots = len(routes_vertices)
-                fig, axs = plt.subplots(num_plots, 1, figsize=(20, num_plots * 3), constrained_layout=True)
-                for idx, vertices in enumerate(routes_vertices):
-                    ax = axs[idx]
-                    earliest_times = vertices[:, 2]
-                    latest_times = vertices[:, 3]
-                    for i, (start, end) in enumerate(zip(earliest_times, latest_times)):
-                        ax.barh(i, end - start, left=start, height=0.4, color='skyblue', edgecolor='black')
-                    #ax.set_yticks(np.arange(len(vertices)))
-                    ax.set_ylabel('Locations', fontsize=16)
-                    #ax.set_yticklabels([f"Location {i + 1}" for i in range(len(vertices))], fontsize=6)
-                    ax.set_xlabel('Time', fontsize=16)
-                    ax.set_title(f'Execution Time Overlap for Route {idx + 1}', fontsize=16)
-                    ax.tick_params(axis='x', labelsize=8)
-                fig.suptitle(f"Instance {directory}", fontsize=20)
+            """
+    for filename in files:
+        if filename.endswith("sol"):
+            instance_path = "../l2/" + filename[:-7] + ".txt"
+            #solution_path = os.path.join(files_path, filename)
+            solution_path = os.path.join(directories_path, filename)
+            routes_vertices = anu.extract_route_vertice_coordinates_and_time_windows(solution_path, instance_path, filename[:-7] + ".txt")
+            #num_plots = len(routes_vertices)
+            #fig, axs = plt.subplots(num_plots, 1, figsize=(20, num_plots * 3), constrained_layout=True)
+            for idx, vertices in enumerate(routes_vertices):
+                fig, axs = plt.subplots(1, 1, figsize=(20, 20), constrained_layout=True)
+                ax = axs
+                earliest_times = vertices[:, 2]
+                latest_times = vertices[:, 3]
+                for i, (start, end) in enumerate(zip(earliest_times, latest_times)):
+                    ax.barh(i, end - start, left=start, height=0.4, color='skyblue', edgecolor='black')
+                #ax.set_yticks(np.arange(len(vertices)))
+                ax.set_ylabel('Locations', fontsize=16)
+                #ax.set_yticklabels([f"Location {i + 1}" for i in range(len(vertices))], fontsize=6)
+                ax.set_xlabel('Time', fontsize=16)
+                ax.set_title(f'Execution Time Overlap for Route {idx + 1}', fontsize=16)
+                ax.tick_params(axis='x', labelsize=8)
+                fig.suptitle(f"Instance {filename[:-7]}", fontsize=20)
                 plt.show()
-                break
+            break
 
 
 def evaluate_routes_with_scaling(solution_path, instance_path, time_windows_path):
@@ -302,10 +307,87 @@ def evaluate_routes_with_scaling(solution_path, instance_path, time_windows_path
             actual_insertion_point = j
             difference = abs(predicted_insertion_point - actual_insertion_point)
             differences.append(difference)
-            print(
-                f"Vertex {j}: Predicted: {predicted_insertion_point}, Actual: {actual_insertion_point}, Difference: {difference}")
+            #print(
+            #    f"Vertex {j}: Predicted: {predicted_insertion_point}, Actual: {actual_insertion_point}, Difference: {difference}")
     print(f"Average differences over all routes: {np.mean(differences)}")
 
+
+def drop_off_route_distribution():
+    directories_path = "../out/"
+    directories = os.listdir(directories_path)
+    index_distances = []
+    for directory in directories:
+        files_path = os.path.join(directories_path, directory)
+        files = os.listdir(files_path)
+        for filename in files:
+            if filename.endswith("sol"):
+                file_path = os.path.join(files_path, filename)
+                with open(file_path, 'r') as file:
+                    # calculate weightings
+                    contents = file.readlines()
+                    routes = contents[1:len(contents) - 1]
+                    routeCounter = 1
+                for route in routes:
+                    verticeIndices = util.extract_route(route)
+                    instance = "../l1/" + directory + ".txt"
+                    # the origindepots have the lowest ids bigger than the ids of the actual requests. Therefore taking the
+                    # lowest id of the startingpoints gives the amount of pickup and dropoff locations combined.
+                    with open(instance, 'r') as file:
+                        contents = file.readlines()
+                    startingPoints = util.extract_first_startingPoints_index(contents)
+                    n = startingPoints - 1
+                    # Create pairs between i and i + n//2 (e.g., 1 <-> 6, 2 <-> 7, etc.)
+                    half_n = math.floor(n / 2)
+                    pairs = [(i, i + half_n) for i in range(1, half_n + 1)]  # Generate pairs like (1, 6), (2, 7), etc.
+                    # Find distances between pairs
+                    distances = []
+                    for pair in pairs:
+                        element1, element2 = pair  # e.g. (1, 6), (2, 7), etc.
+                        # Check if both elements of the pair are present in the list
+                        if element1 in verticeIndices and element2 in verticeIndices:
+                            # Find their positions in the list
+                            index1 = verticeIndices.index(element1)
+                            index2 = verticeIndices.index(element2)
+                            # Calculate the number of elements between them
+                            dist = abs(
+                                index1 - index2) - 1  # Distance between the indices minus 1 (for in-between elements)
+                            distances.append(dist)
+                        elif element1 not in verticeIndices and element2 not in verticeIndices:
+                            # Skip this pair if either element is missing
+                            distances.append(None)
+                        else:
+                            raise Exception("Dis no gud")
+                    # Output the distances
+                    print("Distances between pairs (None if missing):", distances)
+                    # Plotting the distances, excluding missing pairs
+                    valid_distances = [dist for dist in distances if dist is not None]
+                    """        
+                    plt.plot(valid_distances, marker='o')
+                    plt.title("Number of Elements Between Pick-up/Drop-off Pairs (" + directory + ", routeNr.: " + str(
+                        routeCounter) + ")")
+                    plt.xlabel("Valid Pair Index")
+                    plt.ylabel("Number of Elements Between")
+                    plt.grid(True)
+                    plt.show()
+                    """
+                    index_distances+=valid_distances
+                    routeCounter += 1
+            break
+    mean = np.mean(index_distances)
+    variance = np.var(index_distances)
+    std_dev = np.std(index_distances)
+    median = np.median(index_distances)
+    minimum = np.min(index_distances)
+    maximum = np.max(index_distances)
+    print(f"Mean: {mean}")
+    print(f"Variance: {variance}")
+    print(f"Standard Deviation: {std_dev}")
+    print(f"Median: {median}")
+    print(f"Minimum: {minimum}")
+    print(f"Maximum: {maximum}")
+
+
+#drop_off_route_distribution()
 
 def draw_example_graph(nodes):
     G = nx.DiGraph()
@@ -339,7 +421,7 @@ def draw_example_graph(nodes):
 #route_distribution()
 #pca_analysis()
 #route_distribution_with_annotations()
-#route_distribution_time_windows()
+route_distribution_time_windows()
 #anu.execute_evaluation_all_files_sol(evaluate_routes_with_scaling)
 nodes = [
         ("Charging Station", "#8fc78f"),
@@ -350,4 +432,4 @@ nodes = [
         ("DropOff 2", "#add8e6"),
         ("Destination Depot", "#fbbd8b")
     ]
-draw_example_graph(nodes)
+#draw_example_graph(nodes)

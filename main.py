@@ -158,7 +158,7 @@ print("## Classification")
 print("################################################################################################################################################################################################################################")
 
 #Data creation
-inputVector = dp.create_input('l1/')
+inputVector = dp.create_input('l1Random/',"tightenedWindowsRandom/", "infeasibleArcsRandom/","outRandom/")
 length = len(inputVector[0])
 
 y = []
@@ -182,7 +182,6 @@ for i in range(len(inputVector)):
 print(np.array(y).shape)
 yNp = np.array(y)
 XNp = np.array(X)
-np.savetxt('help.txt', yNp.T)
 yPositive = yNp[yNp > 0]
 xPositive = XNp[yNp > 0]
 yNpNegative = yNp[yNp <= 0]
@@ -192,9 +191,41 @@ xNegative = xNpNegative[np.random.choice(xNpNegative.shape[0], len(xPositive), r
 X = np.vstack((xNegative, xPositive))
 y = np.hstack((yNegative, yPositive))
 
-print("Y: ")
-print(y)
-print(X.shape)
+#test data creation
+inputVector_test = dp.create_input('l1/', "tightenedWindows/", "infeasibleArcs/","out/")
+length = len(inputVector_test[0])
+
+y_test = []
+X_test = []
+print(len(inputVector_test))
+print(len(inputVector_test[0]))
+for j in range(len(inputVector_test)):
+    for i in range(len(inputVector_test[j])):
+        if (i+1) % length == 0:
+            y_test.append(inputVector_test[j][i])
+
+for i in range(len(inputVector_test)):
+    dataPoint = []
+    for j in range(len(inputVector_test[i])):
+        if (j + 1) % length != 0:
+            dataPoint.append(inputVector_test[i][j])
+        if ((j + 1) % length == 0):
+            X_test.append(dataPoint)
+            dataPoint = []
+
+print(np.array(y_test).shape)
+y_test_Np = np.array(y_test)
+X_test_Np = np.array(X_test)
+y_test_Positive = y_test_Np[y_test_Np > 0]
+X_test_Positive = X_test_Np[y_test_Np > 0]
+y_test_NpNegative = y_test_Np[y_test_Np <= 0]
+X_test_NpNegative = X_test_Np[y_test_Np <= 0]
+y_test_Negative = sparsify(y_test_NpNegative, len(X_test_Positive))
+x_test_Negative = X_test_NpNegative[np.random.choice(X_test_NpNegative.shape[0], len(X_test_Positive), replace=False)]
+X_test = np.vstack((x_test_Negative, X_test_Positive))
+y_test = np.hstack((y_test_Negative, y_test_Positive))
+
+"""
 # Scatter plot of features colored by class
 for i in range(length-1):
     plt.scatter(range(len(y)), X[:, i], color=[["black", "red"][int(value)] for value in y], label='Data Points')
@@ -203,14 +234,13 @@ for i in range(length-1):
     plt.title(f'Feature {i+1} Scatter Plot')
     plt.legend()
     plt.show()
-print("Sum of y", sum(y))
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+"""
+#X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train = X
+y_train = y
 scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
-print(np.sum(X_train))
-print(np.sum(X_test))
-np.savetxt('array.txt', X)
 
 """
 model = LogisticRegression()
@@ -251,7 +281,7 @@ grid_search = GridSearchCV(pipeline, param_grid, cv=5, scoring='accuracy', n_job
 
 # Fit the model using GridSearchCV to find the best hyperparameters
 grid_search.fit(X_train, y_train)
-"""
+
 """
 svm = SVC()
 
@@ -273,7 +303,7 @@ grid_search.fit(X_train, y_train)
 print("GridSearchCV completed")
 """
 # Get best parameters and model from grid search
-"""
+
 best_params = grid_search.best_params_
 print(f"Best Parameters: {best_params}")
 
@@ -333,7 +363,7 @@ model_params = {
 
 with open('linear_svc_params.json', 'w') as f:
     json.dump(model_params, f)
-"""
+
 joblib_file = "models/svm_linear_one_time_metric.pkl"
 joblib.dump(best_svm, joblib_file)
 """
@@ -407,9 +437,9 @@ print("#########################################################################
 #loaded_model = joblib.load("models/svr_model_one_time_metric.pkl")
 #pruning.process_directory_and_predict_svr(loaded_model, "l1/", 80)
 #pruning.process_directory_and_predict_svr(loaded_model, "l2/", 80)
-"""
+
 
 
 
 #loaded_model = joblib.load("models/svm_rbf.pkl")
-pruning.process_directory_and_predict_svm(best_svm, "l2/")
+#pruning.process_directory_and_predict_svm(best_svm, "l2/")

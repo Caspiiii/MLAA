@@ -1,4 +1,5 @@
 import os
+import bisect
 
 import util
 import numpy as np
@@ -36,15 +37,23 @@ def extract_route_vertice_coordinates(solution_path, instance_path):
     return routes_vertices
 
 def extract_route_development(solution_path):
+    """
+    Extracts all obj values/times of the .out file given in solution path
+    :param solution_path: path to a .out file
+    :return: Both the obj values and times when these obj values were found ordered by when
+    they were found for a given .out file.
+    """
     route_development_obj = []
     route_development_times = []
-
     shouldBeRead = False
     with open(solution_path, 'r') as file:
         contents = file.readlines()
         for conent in contents:
             if "\n" == conent and shouldBeRead:
                 shouldBeRead = False
+            if len(route_development_times) > 0:
+                if max(route_development_times) > 30000:
+                    shouldBeRead = False
             if shouldBeRead:
                 obj_value = float(conent.split()[4])
                 time_value = float(conent.split()[5])
@@ -142,4 +151,22 @@ def execute_evaluation_all_files_sol(function):
             solution_path = os.path.join(files_path, first_sol_file)
             time_windows_path = directory + ".txt"
             function(solution_path, instance_path, time_windows_path)
+
+
+def extract_value_at_given_time(solution_path, time):
+    """
+    Given the path to an .out file and a time the function finds the best objective value found until that
+    time.
+    :param solution_path: Path to an .out file.
+    :param time: The time of which the objective value should be returned.
+    :return: The objective function value at time given in the solution in solution_path.
+    """
+    obj_val_development, time_development = extract_route_development(solution_path)
+    if (min(time_development) > time):
+        return 100000
+    idx = bisect.bisect_left(time_development, time)
+    if time_development[idx] == time:
+        return obj_val_development[idx]
+    else:
+        return obj_val_development[idx - 1]
 

@@ -10,6 +10,7 @@ from sklearn.metrics import mean_squared_error, r2_score, accuracy_score, confus
 import joblib
 import dataprocessing as dp
 import matplotlib.pyplot as plt
+import pandas as pd
 import pruning
 import json
 from sklearn.linear_model import LogisticRegression
@@ -29,16 +30,185 @@ def sparsify(input, size):
     selected_elements = np.random.choice(input, num_to_select, replace=False)
     return selected_elements
 
+def extract_features_labels(input_vector):
+    length = len(input_vector[0])
+    y = []
+    X = []
+    for j in range(len(input_vector)):
+        for i in range(len(input_vector[j])):
+            if (i + 1) % length == 0:
+                y.append(input_vector[j][i])
+
+    for i in range(len(input_vector)):
+        dataPoint = []
+        for j in range(len(input_vector[i])):
+            if (j + 1) % length != 0:
+                dataPoint.append(input_vector[i][j])
+            if ((j + 1) % length == 0):
+                X.append(dataPoint)
+                dataPoint = [] # The last element is the label.
+    return np.array(X), np.array(y)
+
+
+# Helper function to balance the dataset based on positive examples.
+def balance_dataset(X, y):
+    yPositive = y[y > 0]
+    xPositive = X[y > 0]
+    yNpNegative = y[y <= 0]
+    xNpNegative = X[y <= 0]
+    yNegative = sparsify(yNpNegative, len(xPositive))
+    #sparsify does not work here because xNpNegative is an numpy array with both multiple columns and rows.
+    xNegative = xNpNegative[np.random.choice(xNpNegative.shape[0], len(xPositive), replace=False)]
+    #put the positive and negative data points back together
+    X_balanced = np.vstack((xNegative, xPositive))
+    y_balanced = np.hstack((yNegative, yPositive))
+    return X_balanced, y_balanced
+
+
+def save_features_to_csv(X_train, y_train, X_test, y_test):
+    # Process training data
+    y_train = y_train.reshape(-1, 1)
+    train_data = np.hstack((X_train, y_train))
+    df_train = pd.DataFrame(train_data)
+    df_train.to_csv('features_l1_best_random.csv', index=False, header=False)
+
+    # Process test data
+    y_test = y_test.reshape(-1, 1)
+    test_data = np.hstack((X_test, y_test))
+    df_test = pd.DataFrame(test_data)
+    df_test.to_csv('features_l1_best.csv', index=False, header=False)
+
+def create_data():
+    # Data creation
+    # === Training data creation ===
+    inputVector = dp.create_input('l1Random/', "tightenedWindowsRandom/", "infeasibleArcsRandom/", "outRandom/")
+    length = len(inputVector[0])
+    X_train, y_train = extract_features_labels(inputVector)
+    X_train, y_train = balance_dataset(X_train, y_train)
+
+    # === Test data creation ===
+    inputVector_test = dp.create_input('l1/', "tightenedWindows/", "infeasibleArcs/", "out/")
+    X_test, y_test = extract_features_labels(inputVector_test)
+    X_test, y_test = balance_dataset(X_test, y_test)
+
+    # === Scale the data ===
+    scaler = StandardScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
+
+    #saves the features and labels into csv files.
+    #save_features_to_csv(X_train, y_train, X_test, y_test)
+
+    return X_train, y_train, X_test, y_test
+
 
 ###############################################################################################################################################################################################################
-##          Regression
+##          Classification
 ###############################################################################################################################################################################################################
+print("################################################################################################################################################################################################################################")
+print("## Classification")
+print("################################################################################################################################################################################################################################")
+
+
+
+def svm_nystroem ():
+    X_train, y_train, X_test, y_test = create_data()
+    # === Pipeline ===
+    # Create the pipeline
+    pipeline = Pipeline([
+        ('nystroem', Nystroem()),  # Nystroem transformer
+        ('svc', LinearSVC(dual="auto"))  # Linear Support Vector Classifier
+    ])
+
+    # Define the parameter grid for GridSearchCV
+    param_grid = {
+        'nystroem__kernel': ['rbf'],
+        'nystroem__gamma': [0.5, 0.75, 1.0],
+        'nystroem__n_components': [10, 20, 30],
+        'svc__C': [0.1, 1, 10],
+        'svc__max_iter': [1000, 5000]
+    }
+
+    # Set up the GridSearchCV
+    grid_search = GridSearchCV(pipeline, param_grid, cv=5, scoring='accuracy', n_jobs=-1)
+
+    # Fit the model using GridSearchCV to find the best hyperparameters
+    grid_search.fit(X_train, y_train)
+
+    # Get best parameters and model from grid search
+    best_params = grid_search.best_params_
+    print(f"Best Parameters: {best_params}")
+    best_svm = grid_search.best_estimator_
+
+    # Predict on the test data
+    y_pred = best_svm.predict(X_test)
+
+    # Calculate accuracy and other classification metrics
+    accuracy = accuracy_score(y_test, y_pred)
+    conf_matrix = confusion_matrix(y_test, y_pred)
+    class_report = classification_report(y_test, y_pred)
+    print(f"Accuracy: {accuracy:.3f}")
+    print("Confusion Matrix:")
+    print(conf_matrix)
+    print("Classification Report:")
+    print(class_report)
+
+
+def svm_linear ():
+    X_train, y_train, X_test, y_test = create_data()
+    #LinearSVM
+    svm = LinearSVC(dual="auto")
+    param_grid = {'C': [0.1, 1, 10, 100],
+                  'max_iter': [1000, 5000]}
+
+    # Initialize GridSearchCV
+    grid_search = GridSearchCV(svm, param_grid, scoring='recall', verbose = 3, cv=5)
+    grid_search.fit(X_train, y_train)
+    print("GridSearchCV completed")
+    # Best parameters and model
+    best_params = grid_search.best_params_
+    print(f"Best Parameters: {best_params}")
+    best_svm = grid_search.best_estimator_
+    y_pred = best_svm.predict(X_test)
+
+    # Calculate accuracy and other classification metrics
+    accuracy = accuracy_score(y_test, y_pred)
+    conf_matrix = confusion_matrix(y_test, y_pred)
+    class_report = classification_report(y_test, y_pred)
+    print(f"Accuracy: {accuracy:.3f}")
+    print("Confusion Matrix:")
+    print(conf_matrix)
+    print("Classification Report:")
+    print(class_report)
+
+    #save the best model for later use
+    model_params = {
+        "coef": best_svm.coef_.tolist(),
+        "intercept": best_svm.intercept_.tolist(),
+    }
+    with open('linear_svc_params.json', 'w') as f:
+        json.dump(model_params, f)
+
+
+
+svm_nystroem()
+#svm_linear()
+
+
+
+###############################################################################################################################################################################################################
+##          OBSOLETE AND OUTDATED FROM HERE. JUST LEFT IN FOR COMPLETNESS.
+###############################################################################################################################################################################################################
+
+###############################################################################################################################################################################################################
+##          Regression !!!OUTDATED AND NOT USED ANYMORE!!!
+###############################################################################################################################################################################################################
+
+"""
 print("################################################################################################################################################################################################################################")
 print("## Regression")
 print("################################################################################################################################################################################################################################")
 
-
-"""
 
 inputVector = dp.create_input('l1/')
 
@@ -150,282 +320,11 @@ for i in range(X_test.shape[1]):
     plt.show()
 
 """
-###############################################################################################################################################################################################################
-##          Classification
-###############################################################################################################################################################################################################
-print("################################################################################################################################################################################################################################")
-print("## Classification")
-print("################################################################################################################################################################################################################################")
-
-#Data creation
-inputVector = dp.create_input('l1Random/',"tightenedWindowsRandom/", "infeasibleArcsRandom/","outRandom/")
-length = len(inputVector[0])
-
-y = []
-X = []
-print(len(inputVector))
-print(len(inputVector[0]))
-for j in range(len(inputVector)):
-    for i in range(len(inputVector[j])):
-        if (i+1) % length == 0:
-            y.append(inputVector[j][i])
-
-for i in range(len(inputVector)):
-    dataPoint = []
-    for j in range(len(inputVector[i])):
-        if (j + 1) % length != 0:
-            dataPoint.append(inputVector[i][j])
-        if ((j + 1) % length == 0):
-            X.append(dataPoint)
-            dataPoint = []
-
-print(np.array(y).shape)
-yNp = np.array(y)
-XNp = np.array(X)
-yPositive = yNp[yNp > 0]
-xPositive = XNp[yNp > 0]
-yNpNegative = yNp[yNp <= 0]
-xNpNegative = XNp[yNp <= 0]
-yNegative = sparsify(yNpNegative, len(xPositive))
-xNegative = xNpNegative[np.random.choice(xNpNegative.shape[0], len(xPositive), replace=False)]
-X = np.vstack((xNegative, xPositive))
-y = np.hstack((yNegative, yPositive))
-
-#test data creation
-inputVector_test = dp.create_input('l1/', "tightenedWindows/", "infeasibleArcs/","out/")
-length = len(inputVector_test[0])
-
-y_test = []
-X_test = []
-print(len(inputVector_test))
-print(len(inputVector_test[0]))
-for j in range(len(inputVector_test)):
-    for i in range(len(inputVector_test[j])):
-        if (i+1) % length == 0:
-            y_test.append(inputVector_test[j][i])
-
-for i in range(len(inputVector_test)):
-    dataPoint = []
-    for j in range(len(inputVector_test[i])):
-        if (j + 1) % length != 0:
-            dataPoint.append(inputVector_test[i][j])
-        if ((j + 1) % length == 0):
-            X_test.append(dataPoint)
-            dataPoint = []
-
-print(np.array(y_test).shape)
-y_test_Np = np.array(y_test)
-X_test_Np = np.array(X_test)
-y_test_Positive = y_test_Np[y_test_Np > 0]
-X_test_Positive = X_test_Np[y_test_Np > 0]
-y_test_NpNegative = y_test_Np[y_test_Np <= 0]
-X_test_NpNegative = X_test_Np[y_test_Np <= 0]
-y_test_Negative = sparsify(y_test_NpNegative, len(X_test_Positive))
-x_test_Negative = X_test_NpNegative[np.random.choice(X_test_NpNegative.shape[0], len(X_test_Positive), replace=False)]
-X_test = np.vstack((x_test_Negative, X_test_Positive))
-y_test = np.hstack((y_test_Negative, y_test_Positive))
-
-"""
-# Scatter plot of features colored by class
-for i in range(length-1):
-    plt.scatter(range(len(y)), X[:, i], color=[["black", "red"][int(value)] for value in y], label='Data Points')
-    plt.xlabel('Indices')
-    plt.ylabel(f'Feature {i+1}')
-    plt.title(f'Feature {i+1} Scatter Plot')
-    plt.legend()
-    plt.show()
-"""
-#X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-X_train = X
-y_train = y
-scaler = StandardScaler()
-X_train = scaler.fit_transform(X_train)
-X_test = scaler.transform(X_test)
-
-"""
-model = LogisticRegression()
-
-# Train the model
-model.fit(X_train, y_train)
-
-# Make predictions on the test set
-y_pred = model.predict(X_test)
-
-# Evaluate the model's accuracy
-accuracy = accuracy_score(y_test, y_pred)
-print(f"Accuracy: {accuracy:.2f}")
-"""
-
-#Pipeline
-
-# Create the pipeline
-pipeline = Pipeline([
-    ('nystroem', Nystroem()),  # Nystroem transformer
-    ('svc', LinearSVC(dual="auto"))  # Linear Support Vector Classifier
-])
-
-
-# Define the parameter grid for GridSearchCV
-param_grid = {
-    'nystroem__kernel': ['rbf'],
-    'nystroem__gamma': [0.5, 0.75, 1.0],
-    'nystroem__n_components': [10, 20, 30],
-    'svc__C': [0.1, 1, 10],
-    'svc__max_iter': [1000, 5000]
-}
-
-
-
-# Set up the GridSearchCV
-grid_search = GridSearchCV(pipeline, param_grid, cv=5, scoring='accuracy', n_jobs=-1)
-
-# Fit the model using GridSearchCV to find the best hyperparameters
-grid_search.fit(X_train, y_train)
-
-"""
-svm = SVC()
-
-# Define parameter grid to test different kernels, C values, and maximum iterations
-param_grid = {
-    'C': [0.1, 1, 10, 100],       # Regularization parameter
-    'kernel': ['linear', 'rbf', 'poly', 'sigmoid'],  # Test different kernels
-    'gamma': ['scale', 'auto']    # Gamma parameter for RBF, poly, and sigmoid kernels
-}
-
-print("Starting GridSearchCV for SVM with different kernels")
-
-# Initialize GridSearchCV with SVC
-grid_search = GridSearchCV(svm, param_grid, scoring='accuracy', verbose=3, cv=5)
-
-# Fit the model to the training data
-grid_search.fit(X_train, y_train)
-
-print("GridSearchCV completed")
-"""
-# Get best parameters and model from grid search
-
-best_params = grid_search.best_params_
-print(f"Best Parameters: {best_params}")
-
-best_svm = grid_search.best_estimator_
-
-# Predict on the test data
-y_pred = best_svm.predict(X_test)
-print(y_pred)
-
-# Calculate accuracy and other classification metrics
-accuracy = accuracy_score(y_test, y_pred)
-conf_matrix = confusion_matrix(y_test, y_pred)
-class_report = classification_report(y_test, y_pred)
-
-print(f"Accuracy: {accuracy:.3f}")
-print("Confusion Matrix:")
-print(conf_matrix)
-print("Classification Report:")
-print(class_report)
-"""
-#LinearSVM
-
-
-svm = LinearSVC(dual="auto")
-
-param_grid = {'C': [0.1, 1, 10, 100],
-              'max_iter': [1000, 5000]}
-
-print("Starting GridSearchCV for SVM")
-# Initialize GridSearchCV
-grid_search = GridSearchCV(svm, param_grid, scoring='accuracy', verbose = 3, cv=5)
-grid_search.fit(X_train, y_train)
-print("GridSearchCV completed")
-# Best parameters and model
-best_params = grid_search.best_params_
-print(f"Best Parameters: {best_params}")
-best_svm = grid_search.best_estimator_
-
-y_pred = best_svm.predict(X_test)
-print(y_pred)
-
-# Calculate accuracy and other classification metrics
-accuracy = accuracy_score(y_test, y_pred)
-conf_matrix = confusion_matrix(y_test, y_pred)
-class_report = classification_report(y_test, y_pred)
-
-print(f"Accuracy: {accuracy:.3f}")
-print("Confusion Matrix:")
-print(conf_matrix)
-print("Classification Report:")
-print(class_report)
-
-model_params = {
-    "coef": best_svm.coef_.tolist(),
-    "intercept": best_svm.intercept_.tolist(),
-}
-
-with open('linear_svc_params.json', 'w') as f:
-    json.dump(model_params, f)
-
-joblib_file = "models/svm_linear_one_time_metric.pkl"
-joblib.dump(best_svm, joblib_file)
-"""
-"""
-#Analysis with adapted recall
-
-y_proba = best_svm.predict_proba(X_test)[:, 1]
-
-# Adjust the threshold
-threshold = 0.03  # Example threshold
-y_pred_adjusted = (y_proba >= threshold).astype(int)
-
-# Calculate accuracy and other classification metrics with adjusted threshold
-accuracy_adjusted = accuracy_score(y_test, y_pred_adjusted)
-conf_matrix_adjusted = confusion_matrix(y_test, y_pred_adjusted)
-class_report_adjusted = classification_report(y_test, y_pred_adjusted)
-
-print(f"Accuracy with adjusted threshold: {accuracy_adjusted:.3f}")
-print("Confusion Matrix with adjusted threshold:")
-print(conf_matrix_adjusted)
-print(conf_matrix_adjusted[0,1])
-print("Classification Report with adjusted threshold:")
-print(class_report_adjusted)
-
-# Compute ROC curve and ROC area
-fpr, tpr, thresholds = roc_curve(y_test, y_proba)
-roc_auc = auc(fpr, tpr)
-
-# Plot ROC curve
-plt.figure()
-plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
-plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
-plt.xlim([0.0, 1.0])
-plt.ylim([0.0, 1.05])
-plt.xlabel('False Positive Rate')
-plt.ylabel('True Positive Rate')
-plt.title('Receiver Operating Characteristic')
-plt.legend(loc="lower right")
-for i, txt in enumerate(thresholds):
-    if i % 5 == 0:  # Annotate every 5th threshold for clarity
-        plt.annotate(f'{txt:.2f}', (fpr[i], tpr[i]), textcoords="offset points", xytext=(-10,-10), ha='center')
-plt.show()
-"""
-"""
-joblib_file = "models/svm_model_one_time_metric.pkl"
-joblib.dump(best_svm, joblib_file)
-"""
-# Scatter plot of actual vs predicted values for features
-for i in range(length-1):
-    plt.scatter(X_test[:, i], y_test, color='black', label='Actual Data')
-    plt.scatter(X_test[:, i], y_pred, color='red', label='Predicted Data')
-    plt.xlabel(f'Feature {i+1}')
-    plt.ylabel('Target')
-    plt.title(f'SVM Classification: Actual vs Predicted (Feature {i+1})')
-    plt.legend()
-    plt.show()
-    
-
 
 ###############################################################################################################################################################################################################
-##          Pruning
+##          Pruning !!!OBSOLETE, THIS IS NOW DONE IN JULIA CODE!!!
 ###############################################################################################################################################################################################################
+"""
 print("################################################################################################################################################################################################################################")
 print("## Pruning")
 print("################################################################################################################################################################################################################################")
@@ -443,3 +342,4 @@ print("#########################################################################
 
 #loaded_model = joblib.load("models/svm_rbf.pkl")
 #pruning.process_directory_and_predict_svm(best_svm, "l2/")
+"""

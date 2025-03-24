@@ -1,0 +1,101 @@
+EADARP version ecec-dirty
+ARGS: --ifile=EADARP/instances/random/r6-48-00000.txt  --gamma=0.7 --only_single_s_visits=false --odir=EADARP/solutions/random/r6-48-00000 --oname=run14
+Settings:
+--alns_gamma=0.025
+--alns_segment_size=100
+--alns_sigma1=10
+--alns_sigma2=9
+--alns_sigma3=3
+--at_most_one_s=false
+--gamma=0.7
+--ifile=EADARP/instances/random/r6-48-00000.txt
+--infeasible_arcs=EADARP/infeasible_arcs
+--insert_charging_otf=true
+--insert_cost_noise=0.014
+--lns_init_temp_factor=0.0
+--lns_temp_dec_factor=0.99
+--log_all_sols_fname=
+--mh_checkit=false
+--mh_lfreq=0
+--mh_lnewinc=true
+--mh_tciter=-1
+--mh_tctime=-1.0
+--mh_titer=30000
+--mh_tobj=-1.0
+--mh_ttime=-1.0
+--odir=EADARP/solutions/random/r6-48-00000
+--ofile=
+--oname=run14
+--only_single_s_visits=false
+--prepthreshold=0.1
+--repair_max_routes=0
+--route_based_ops=0
+--seed=153390392
+--tightened_windows=EADARP/tightened_windows
+--use_milp_in_otf=0
+--xcheck_isfeasible=false
+
+EADARPInstance(EADARP/instances/random/r6-48-00000.txt, n=48, n_K=6, S=[109, 110, 111], Q=14.85, n_F=6, γ=0.7, T_plan=720.0, F=[103, 104, 105, 106, 107, 108])
+
+Percentage of arcs removed: 68.80934989043097%
+Minimum Degree: 8
+T preprocessing time [s]: 1.587
+I       iter             best          obj_old          obj_new        time              method info
+I          1        575.06167     100048.00000        575.06167      0.0940                 con 
+I          2        573.75710        575.06167        573.75710      0.1050        drrr_15+rrri 
+I          3        562.51365        573.75710        562.51365      0.1360         drrr_15+rrg 
+I          5        561.66693        562.51365        561.66693      0.1550         drrr_15+rrg 
+I          7        554.60028        561.66693        554.60028      0.1750         drrr_15+rrg 
+I          8        549.88668        554.60028        549.88668      0.1780         drrr_15+rrg 
+I         10        530.61676        549.88668        530.61676      0.1970        drrr_15+rroi 
+I         16        528.06096        530.61676        528.06096      0.2940         drrr_15+rrg 
+I         17        527.32921        528.06096        527.32921      0.3040         drrr_15+rrg 
+I         18        525.44430        527.32921        525.44430      0.3120        drrr_15+rroi 
+I         19        525.32207        525.44430        525.32207      0.3120         drrr_15+rrg 
+I         32        524.54958        525.32207        524.54958      0.3380        drrr_15+rroi 
+I         40        523.83349        524.54958        523.83349      0.3610         drrr_15+rrg 
+I         43        522.86072        523.83349        522.86072      0.3790         drrr_15+rrg 
+I         52        522.41232        522.86072        522.41232      0.3900         drrr_15+rrg 
+I         53        520.07290        522.41232        520.07290      0.3920         drrr_15+rrg 
+I        131        519.93682        520.07290        519.93682      0.4780         drrr_15+rrg 
+I        135        517.90804        519.93682        517.90804      0.4800        drrr_15+rrri 
+I        205        517.35025        517.90804        517.35025      0.5610        drrr_15+rrri 
+I        222        514.79791        517.35025        514.79791      0.5720         drrr_15+rrg 
+I        264        513.00147        514.79791        513.00147      0.6110        drrr_15+rroi 
+I        286        510.77354        513.00147        510.77354      0.6290         drrr_15+rrg 
+I        303        508.28354        510.77354        508.28354      0.7150        drrr_15+rrri 
+I        309        507.19884        508.28354        507.19884      0.7260        drrr_15+rroi 
+I        319        506.88000        507.19884        506.88000      0.7410         drrr_15+rrg 
+I        336        505.31248        506.88000        505.31248      0.7600         drrr_15+rrg 
+I        337        505.26665        505.31248        505.26665      0.7600        drrr_15+rroi 
+I        347        505.07104        505.26665        505.07104      0.7770        drrr_15+rrri 
+I        351        503.64884        505.07104        503.64884      0.7790         drrr_15+rrg 
+I        358        501.99731        503.64884        501.99731      0.7840        drrr_15+rrri 
+I        364        501.67847        501.99731        501.67847      0.7870         drrr_15+rrg 
+I       3626        501.09397        501.67847        501.09397      2.8930        drrr_15+rrri 
+I      29930        500.87281        501.09397        500.87281     17.2520         drrr_15+rrg 
+I      30000        500.87281        500.87281        523.69155     17.2940         drrr_15+rrg 
+
+Method statistics
+S  method    iter  succ  succ-rate%  tot-obj-gain  avg-obj-gain  rel-succ%  net-time  net-time%  brut-time  brut-time%
+S  con          1     1   100.00000  -99472.93833  -99472.93833    1.53846   0.09400    0.54354    0.09400     0.54354
+S  drrr_15  29999    32     0.10667     -74.18886      -0.00247   49.23077   0.47400    2.74084    0.47400     2.74084
+S  rrg      10072    19     0.18864     -40.52181      -0.00402   29.23077   9.01300   52.11634    9.01300    52.11634
+S  rroi      9849     6     0.06092     -24.85427      -0.00252    9.23077   3.59800   20.80491    3.59800    20.80491
+S  rrri     10078     7     0.06946      -8.81278      -0.00087   10.76923   4.00100   23.13519    4.00100    23.13519
+S  SUM/AVG  59999    65     0.10834  -99621.31604      -1.66038   20.00000  17.18000   99.34082   17.18000    99.34082
+
+T best solution: EADARPSolution(t_routing=638.005, t_excess=89.477, obj_val=500.873, obj_val_valid=true,
+    unserved_requests=Int64[], F_visited=[108, 106, 107, 104, 103, 105], S_visited=Int64[],
+    (1, ([97, 44, 92, 15, 63, 4, 52, 30, 78, 7, 55, 10, 58, 48, 96, 109, 103], [37.48649881019817], [16]))
+    (2, ([98, 24, 72, 13, 61, 3, 51, 28, 76, 18, 66, 104], Float64[], Int64[]))
+    (3, ([99, 40, 88, 19, 67, 20, 14, 68, 62, 35, 83, 21, 69, 25, 32, 73, 17, 80, 65, 2, 50, 109, 105], [32.373555366256795], [22]))
+    (4, ([100, 47, 95, 31, 45, 79, 93, 26, 74, 8, 33, 81, 56, 46, 94, 9, 57, 109, 106], [28.08394864042363], [18]))
+    (5, ([101, 34, 82, 29, 77, 37, 85, 41, 89, 38, 86, 27, 75, 22, 70, 6, 43, 91, 54, 109, 107], [32.83198281656794], [20]))
+    (6, ([102, 5, 12, 53, 60, 42, 90, 36, 1, 84, 49, 11, 59, 39, 87, 23, 71, 16, 64, 109, 108], [22.226804050205214], [20])))
+
+T best obj: 500.8728146402351
+T best iteration: 29930
+T total iterations: 30000
+T best time [s]: 17.252
+T total time [s]: 17.2940

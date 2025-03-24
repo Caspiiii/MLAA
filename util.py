@@ -407,3 +407,24 @@ def read_solution(solution_path):
         vertice_indices = extract_route(route)
         routes_indices.append(vertice_indices)
     return routes_indices
+
+
+import re
+
+
+def extract_arcs_removed_percentages(solution_path):
+    """
+    Extracts the float values corresponding to the first two occurrences
+    of "Percentage of arcs removed:" in the provided text.
+    :param: solution_path: path to the .out file containing the solution
+    :return: tuple: A tuple containing two floats, (first_percentage, second_percentage).
+    """
+    with open(solution_path, 'r', encoding='utf-8') as file:
+        content = file.read()
+    pattern = r"Percentage of arcs removed:\s*([0-9]*\.?[0-9]+)%"
+    matches = re.findall(pattern, content)
+    if len(matches) < 2:
+        raise ValueError("Less than two 'Percentage of arcs removed' occurrences found.")
+    first_percentage = float(matches[0])
+    second_percentage = float(matches[1])
+    return first_percentage, second_percentage

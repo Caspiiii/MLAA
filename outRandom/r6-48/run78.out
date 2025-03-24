@@ -1,0 +1,97 @@
+EADARP version ecec-dirty
+ARGS: --ifile=EADARP/instances/random/r6-48-00000.txt  --gamma=0.7 --only_single_s_visits=false --odir=EADARP/solutions/random/r6-48-00000 --oname=run78
+Settings:
+--alns_gamma=0.025
+--alns_segment_size=100
+--alns_sigma1=10
+--alns_sigma2=9
+--alns_sigma3=3
+--at_most_one_s=false
+--gamma=0.7
+--ifile=EADARP/instances/random/r6-48-00000.txt
+--infeasible_arcs=EADARP/infeasible_arcs
+--insert_charging_otf=true
+--insert_cost_noise=0.014
+--lns_init_temp_factor=0.0
+--lns_temp_dec_factor=0.99
+--log_all_sols_fname=
+--mh_checkit=false
+--mh_lfreq=0
+--mh_lnewinc=true
+--mh_tciter=-1
+--mh_tctime=-1.0
+--mh_titer=30000
+--mh_tobj=-1.0
+--mh_ttime=-1.0
+--odir=EADARP/solutions/random/r6-48-00000
+--ofile=
+--oname=run78
+--only_single_s_visits=false
+--prepthreshold=0.1
+--repair_max_routes=0
+--route_based_ops=0
+--seed=1021817447
+--tightened_windows=EADARP/tightened_windows
+--use_milp_in_otf=0
+--xcheck_isfeasible=false
+
+EADARPInstance(EADARP/instances/random/r6-48-00000.txt, n=48, n_K=6, S=[109, 110, 111], Q=14.85, n_F=6, γ=0.7, T_plan=720.0, F=[103, 104, 105, 106, 107, 108])
+
+Percentage of arcs removed: 68.80934989043097%
+Minimum Degree: 8
+T preprocessing time [s]: 1.606
+I       iter             best          obj_old          obj_new        time              method info
+I          1        577.92048     100048.00000        577.92048      0.0950                 con 
+I          3        575.92820        577.92048        575.92820      0.2210         drrr_15+rrg 
+I          4        569.40516        575.92820        569.40516      0.2360         drrr_15+rrg 
+I          5        558.11296        569.40516        558.11296      0.2520        drrr_15+rrri 
+I         10        550.19646        558.11296        550.19646      0.3310        drrr_15+rrri 
+I         11        541.47766        550.19646        541.47766      0.3350        drrr_15+rrri 
+I         14        541.04281        541.47766        541.04281      0.3630         drrr_15+rrg 
+I         15        534.73033        541.04281        534.73033      0.3940        drrr_15+rroi 
+I         31        534.06112        534.73033        534.06112      0.4720        drrr_15+rroi 
+I         48        532.71823        534.06112        532.71823      0.4880        drrr_15+rrri 
+I         62        532.26835        532.71823        532.26835      0.5190         drrr_15+rrg 
+I         66        529.35652        532.26835        529.35652      0.5340        drrr_15+rroi 
+I         71        525.96112        529.35652        525.96112      0.5360        drrr_15+rrri 
+I         74        524.39394        525.96112        524.39394      0.5510         drrr_15+rrg 
+I         76        523.09801        524.39394        523.09801      0.5510         drrr_15+rrg 
+I         79        520.88403        523.09801        520.88403      0.5670        drrr_15+rrri 
+I         80        512.23944        520.88403        512.23944      0.5670        drrr_15+rrri 
+I         88        511.26798        512.23944        511.26798      0.5670        drrr_15+rrri 
+I        102        506.16328        511.26798        506.16328      0.5830        drrr_15+rrri 
+I        105        506.11007        506.16328        506.11007      0.5980         drrr_15+rrg 
+I        108        505.72651        506.11007        505.72651      0.5980         drrr_15+rrg 
+I        133        503.44303        505.72651        503.44303      0.6300         drrr_15+rrg 
+I        190        502.98969        503.44303        502.98969      0.6770         drrr_15+rrg 
+I        194        502.20490        502.98969        502.20490      0.6770        drrr_15+rrri 
+I        204        501.02121        502.20490        501.02121      0.6920         drrr_15+rrg 
+I      24634        499.63940        501.02121        499.63940     15.7110        drrr_15+rrri 
+I      25725        499.59156        499.63940        499.59156     16.4220        drrr_15+rrri 
+I      25830        499.51242        499.59156        499.51242     16.4820        drrr_15+rrri 
+I      26721        499.20442        499.51242        499.20442     16.9710        drrr_15+rrri 
+I      30000        499.20442        499.20442        504.95847     19.0960        drrr_15+rroi 
+
+Method statistics
+S  method    iter  succ  succ-rate%  tot-obj-gain  avg-obj-gain  rel-succ%  net-time  net-time%  brut-time  brut-time%
+S  con          1     1   100.00000  -99470.07952  -99470.07952    1.75439   0.09500    0.49749    0.09500     0.49749
+S  drrr_15  29999    28     0.09334     -78.71606      -0.00262   49.12281   0.67800    3.55049    0.67800     3.55049
+S  rrg       9940    11     0.11066     -16.62044      -0.00167   19.29825   9.88300   51.75429    9.88300    51.75429
+S  rroi     10072     3     0.02979      -9.89352      -0.00098    5.26316   4.03100   21.10912    4.03100    21.10912
+S  rrri      9987    14     0.14018     -52.20211      -0.00523   24.56140   4.23100   22.15648    4.23100    22.15648
+S  SUM/AVG  59999    57     0.09500  -99627.51165      -1.66049   20.00000  18.91800   99.06787   18.91800    99.06787
+
+T best solution: EADARPSolution(t_routing=627.886, t_excess=113.161, obj_val=499.204, obj_val_valid=true,
+    unserved_requests=Int64[], F_visited=[104, 105, 103, 107, 108, 106], S_visited=Int64[],
+    (1, ([97, 31, 79, 8, 33, 81, 56, 46, 94, 9, 57, 103], Float64[], Int64[]))
+    (2, ([98, 5, 12, 53, 60, 42, 90, 30, 36, 78, 84, 21, 69, 25, 32, 73, 17, 80, 65, 2, 50, 109, 104], [47.07351959812186], [22]))
+    (3, ([99, 47, 95, 3, 51, 28, 76, 18, 66, 105], Float64[], Int64[]))
+    (4, ([100, 40, 88, 19, 67, 20, 14, 15, 68, 62, 63, 7, 55, 1, 49, 10, 58, 48, 96, 109, 106], [33.10229567371495], [20]))
+    (5, ([101, 44, 92, 34, 82, 29, 77, 37, 85, 41, 89, 38, 86, 27, 75, 22, 70, 6, 43, 91, 54, 109, 107], [49.2928389785874], [22]))
+    (6, ([102, 24, 72, 13, 45, 61, 93, 26, 74, 4, 52, 35, 83, 11, 59, 39, 87, 23, 71, 16, 64, 109, 108], [47.037597327535494], [22])))
+
+T best obj: 499.20441795027546
+T best iteration: 26721
+T total iterations: 30000
+T best time [s]: 16.971
+T total time [s]: 19.0960
